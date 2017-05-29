@@ -1,0 +1,4 @@
+[submodule "uidcore-java"]
+	path = uidcore-java
+	url = https://github.com/uniquid/uidcore-java.git
+    branch = develop
