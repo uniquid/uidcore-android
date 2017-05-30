@@ -40,4 +40,5 @@ public class RegisterFactory implements com.uniquid.register.RegisterFactory {
     public UserRegister getUserRegister() throws RegisterException {
         return instance;
     }
+
 }

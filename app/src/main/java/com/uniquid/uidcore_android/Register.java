@@ -1,6 +1,5 @@
 package com.uniquid.uidcore_android;
 
-
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
