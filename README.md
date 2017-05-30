@@ -12,6 +12,9 @@ to work on both project, you have to clone that linked repository.
 ### Usage example
 ```java
 public class MainActivity {
+
+...
+
     // create RegisterFactory
     RegisterFactory factory = new RegisterFactory(MainActivity.this);
     
@@ -31,6 +34,9 @@ public class MainActivity {
 
     // store new UserChannel into register
     register.insertChannel(userChannel);
+    
+    ...
+    
 }
 
 ```
