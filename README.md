@@ -13,7 +13,7 @@ to work on both project, you have to clone that linked repository.
 ```java
 public class MainActivity {
 
-...
+    ...
 
     // create RegisterFactory
     RegisterFactory factory = new RegisterFactory(MainActivity.this);
