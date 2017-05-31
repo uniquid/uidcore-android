@@ -1,9 +1,8 @@
 apply plugin: 'jacoco'
 
-/*jacoco {
-    toolVersion "0.7.9"
-//    toolVersion = "0.7.4.201502262128"
-}*/
+jacoco {
+    toolVersion = "0.7.9"
+}
 // run ./gradlew clean createDebugCoverageReport jacocoTestReport
 
 task jacocoTestReport(type: JacocoReport, dependsOn: "testDebugUnitTest") {
