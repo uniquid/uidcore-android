@@ -2,7 +2,8 @@ package com.uniquid.uidcore_android;
 
 import android.support.test.InstrumentationRegistry;
 
-import com.uniquid.register.exception.RegisterException;
+import com.uniquid.uidcore_android.exception.RegisterException;
+import com.uniquid.uidcore_android.register.RegisterFactory;
 
 import org.junit.Test;
 

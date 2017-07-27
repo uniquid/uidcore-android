@@ -1,4 +1,4 @@
-package com.uniquid.uidcore_android;
+package com.uniquid.uidcore_android.register;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
@@ -10,18 +10,18 @@ import android.database.sqlite.SQLiteOpenHelper;
  * @author Beatrice Formai
  */
 
-public class SQLiteHelper extends SQLiteOpenHelper {
+class SQLiteHelper extends SQLiteOpenHelper {
     private static final String DB_NAME = "register.db";
     private static final int DB_VERSION = 1;
 
     //    USER
-    public static final String TABLE_USER = "user_channel";
-    public static final String USER_CLM_PROVIDER_NAME = "provider_name";
-    public static final String USER_CLM_PROVIDER_ADDRESS = "provider_address";
-    public static final String USER_CLM_USER_ADDRESS = "user_address";
-    public static final String USER_CLM_BITMASK = "bitmask";
-    public static final String USER_CLM_REVOKE_ADDRESS = "revoke_address";
-    public static final String USER_CLM_REVOKE_TX_ID = "revoke_tx_id";
+    static final String TABLE_USER = "user_channel";
+    static final String USER_CLM_PROVIDER_NAME = "provider_name";
+    static final String USER_CLM_PROVIDER_ADDRESS = "provider_address";
+    static final String USER_CLM_USER_ADDRESS = "user_address";
+    static final String USER_CLM_BITMASK = "bitmask";
+    static final String USER_CLM_REVOKE_ADDRESS = "revoke_address";
+    static final String USER_CLM_REVOKE_TX_ID = "revoke_tx_id";
     private static final String USER_CREATE = "create table " + TABLE_USER + "(" +
             USER_CLM_PROVIDER_NAME + " text not null, " +
             USER_CLM_PROVIDER_ADDRESS + " text not null, " +
@@ -34,13 +34,13 @@ public class SQLiteHelper extends SQLiteOpenHelper {
             USER_CLM_USER_ADDRESS + "));";
 
     //    PROVIDER
-    public static final String TABLE_PROVIDER = "provider_channel";
-    public static final String PROVIDER_CLM_PROVIDER_ADDRESS = "provider_address";
-    public static final String PROVIDER_CLM_USER_ADDRESS = "user_address";
-    public static final String PROVIDER_CLM_BITMASK = "bitmask";
-    public static final String PROVIDER_CLM_REVOKE_ADDRESS = "revoke_address";
-    public static final String PROVIDER_CLM_REVOKE_TX_ID = "revoke_tx_id";
-    public static final String PROVIDER_CLM_CREATION_TIME = "creation_time";
+    static final String TABLE_PROVIDER = "provider_channel";
+    static final String PROVIDER_CLM_PROVIDER_ADDRESS = "provider_address";
+    static final String PROVIDER_CLM_USER_ADDRESS = "user_address";
+    static final String PROVIDER_CLM_BITMASK = "bitmask";
+    static final String PROVIDER_CLM_REVOKE_ADDRESS = "revoke_address";
+    static final String PROVIDER_CLM_REVOKE_TX_ID = "revoke_tx_id";
+    static final String PROVIDER_CLM_CREATION_TIME = "creation_time";
     private static final String PROVIDER_CREATE = "create table " + TABLE_PROVIDER + "(" +
             PROVIDER_CLM_PROVIDER_ADDRESS + " text not null, " +
             PROVIDER_CLM_USER_ADDRESS + " text not null, " +
@@ -51,11 +51,11 @@ public class SQLiteHelper extends SQLiteOpenHelper {
             PROVIDER_CLM_PROVIDER_ADDRESS + ", " +
             PROVIDER_CLM_USER_ADDRESS + "));";
 
-    public SQLiteHelper(Context context) {
+    SQLiteHelper(Context context) {
         super(context, DB_NAME, null, DB_VERSION);
     }
 
-    public SQLiteHelper(Context context, String name) {
+    SQLiteHelper(Context context, String name) {
         super(context, name, null, DB_VERSION);
     }
 

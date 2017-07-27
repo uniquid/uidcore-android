@@ -1,14 +1,14 @@
-package com.uniquid.uidcore_android;
+package com.uniquid.uidcore_android.register;
 
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
-import com.uniquid.register.exception.RegisterException;
-import com.uniquid.register.provider.ProviderChannel;
-import com.uniquid.register.provider.ProviderRegister;
-import com.uniquid.register.user.UserChannel;
-import com.uniquid.register.user.UserRegister;
+import com.uniquid.uidcore_android.exception.RegisterException;
+import com.uniquid.uidcore_android.provider.ProviderChannel;
+import com.uniquid.uidcore_android.provider.ProviderRegister;
+import com.uniquid.uidcore_android.user.UserChannel;
+import com.uniquid.uidcore_android.user.UserRegister;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -102,7 +102,7 @@ public class Register implements UserRegister, ProviderRegister {
             userChannel.setRevokeTxId(cursor.getString(5));
             cursor.close();
         } else {
-            throw new RegisterException("Doesn't exist any record with specified name");
+            throw new RegisterException("Doesn't exist any record with specified provider address");
         }
         return userChannel;
     }
@@ -129,7 +129,7 @@ public class Register implements UserRegister, ProviderRegister {
             userChannel.setRevokeTxId(cursor.getString(5));
             cursor.close();
         } else {
-            throw new RegisterException("Doesn't exist any record with specified name");
+            throw new RegisterException("Doesn't exist any record with specified revoke txId");
         }
         return userChannel;
     }
@@ -220,7 +220,6 @@ public class Register implements UserRegister, ProviderRegister {
             } while (cursor.moveToNext());
         }
         cursor.close();
-
         return channels;
     }
 

@@ -1,18 +1,17 @@
-package com.uniquid.uidcore_android;
+package com.uniquid.uidcore_android.register;
 
 import android.content.Context;
 
-import com.uniquid.register.exception.RegisterException;
-import com.uniquid.register.provider.ProviderRegister;
-import com.uniquid.register.user.UserRegister;
+import com.uniquid.uidcore_android.exception.RegisterException;
+import com.uniquid.uidcore_android.provider.ProviderRegister;
+import com.uniquid.uidcore_android.user.UserRegister;
 
 /**
- * Class implementation of {@code RegisterFactory} that uses SQLite as data store.
- *
  * @author Beatrice Formai
  */
 
-public class RegisterFactory implements com.uniquid.register.RegisterFactory {
+public class RegisterFactory implements IRegisterFactory {
+
     private Register instance;
 
     public RegisterFactory(final Context context) {
@@ -40,5 +39,4 @@ public class RegisterFactory implements com.uniquid.register.RegisterFactory {
     public UserRegister getUserRegister() throws RegisterException {
         return instance;
     }
-
 }
