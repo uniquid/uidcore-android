@@ -2,19 +2,22 @@ package com.uniquid.uidcore_android.register;
 
 import android.content.Context;
 
-import com.uniquid.uidcore_android.exception.RegisterException;
-import com.uniquid.uidcore_android.provider.ProviderRegister;
-import com.uniquid.uidcore_android.user.UserRegister;
+import com.uniquid.register.RegisterFactory;
+import com.uniquid.register.exception.RegisterException;
+import com.uniquid.register.provider.ProviderRegister;
+import com.uniquid.register.transaction.TransactionManager;
+import com.uniquid.register.user.UserRegister;
+
 
 /**
  * @author Beatrice Formai
  */
 
-public class RegisterFactory implements IRegisterFactory {
+public class RegisterFactoryImpl implements RegisterFactory {
 
     private Register instance;
 
-    public RegisterFactory(final Context context) {
+    public RegisterFactoryImpl(final Context context) {
         instance = new Register(context);
     }
 
@@ -38,5 +41,10 @@ public class RegisterFactory implements IRegisterFactory {
     @Override
     public UserRegister getUserRegister() throws RegisterException {
         return instance;
+    }
+
+    @Override
+    public TransactionManager getTransactionManager() throws RegisterException {
+        return null;
     }
 }

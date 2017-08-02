@@ -4,11 +4,11 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
-import com.uniquid.uidcore_android.exception.RegisterException;
-import com.uniquid.uidcore_android.provider.ProviderChannel;
-import com.uniquid.uidcore_android.provider.ProviderRegister;
-import com.uniquid.uidcore_android.user.UserChannel;
-import com.uniquid.uidcore_android.user.UserRegister;
+import com.uniquid.register.exception.RegisterException;
+import com.uniquid.register.provider.ProviderChannel;
+import com.uniquid.register.provider.ProviderRegister;
+import com.uniquid.register.user.UserChannel;
+import com.uniquid.register.user.UserRegister;
 
 import java.util.ArrayList;
 import java.util.List;

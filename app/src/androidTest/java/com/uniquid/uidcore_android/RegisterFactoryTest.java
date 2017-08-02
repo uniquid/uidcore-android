@@ -2,8 +2,8 @@ package com.uniquid.uidcore_android;
 
 import android.support.test.InstrumentationRegistry;
 
-import com.uniquid.uidcore_android.exception.RegisterException;
-import com.uniquid.uidcore_android.register.RegisterFactory;
+import com.uniquid.register.exception.RegisterException;
+import com.uniquid.uidcore_android.register.RegisterFactoryImpl;
 
 import org.junit.Test;
 
@@ -16,19 +16,19 @@ import static junit.framework.Assert.assertNotNull;
 public class RegisterFactoryTest {
     @Test
     public void testConstructor() throws RegisterException {
-        RegisterFactory registerFactory = new RegisterFactory(InstrumentationRegistry.getContext());
+        RegisterFactoryImpl registerFactory = new RegisterFactoryImpl(InstrumentationRegistry.getContext());
         assertNotNull(registerFactory);
     }
 
     @Test
     public void testGetProviderRegister() throws RegisterException {
-        RegisterFactory registerFactory = new RegisterFactory(InstrumentationRegistry.getContext());
+        RegisterFactoryImpl registerFactory = new RegisterFactoryImpl(InstrumentationRegistry.getContext());
         assertNotNull(registerFactory.getProviderRegister());
     }
 
     @Test
     public void testGetUserRegister() throws RegisterException {
-        RegisterFactory registerFactory = new RegisterFactory(InstrumentationRegistry.getContext());
+        RegisterFactoryImpl registerFactory = new RegisterFactoryImpl(InstrumentationRegistry.getContext());
         assertNotNull(registerFactory.getUserRegister());
     }
 }

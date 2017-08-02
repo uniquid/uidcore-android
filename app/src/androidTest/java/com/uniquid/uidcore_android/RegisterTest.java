@@ -2,14 +2,14 @@ package com.uniquid.uidcore_android;
 
 import android.support.test.InstrumentationRegistry;
 
-import com.uniquid.uidcore_android.exception.RegisterException;
-import com.uniquid.uidcore_android.provider.ProviderChannel;
-import com.uniquid.uidcore_android.provider.ProviderRegister;
-import com.uniquid.uidcore_android.register.IRegisterFactory;
+import com.uniquid.register.RegisterFactory;
+import com.uniquid.register.exception.RegisterException;
+import com.uniquid.register.provider.ProviderChannel;
+import com.uniquid.register.provider.ProviderRegister;
+import com.uniquid.register.user.UserChannel;
+import com.uniquid.register.user.UserRegister;
 import com.uniquid.uidcore_android.register.Register;
-import com.uniquid.uidcore_android.register.RegisterFactory;
-import com.uniquid.uidcore_android.user.UserChannel;
-import com.uniquid.uidcore_android.user.UserRegister;
+import com.uniquid.uidcore_android.register.RegisterFactoryImpl;
 
 import junit.framework.Assert;
 
@@ -29,7 +29,7 @@ import static junit.framework.Assert.fail;
 
 public class RegisterTest {
 
-    private IRegisterFactory factory;
+    private RegisterFactory factory;
 
     private String providerAddress = "mfuta5iXJNe7yzCaPtmm4W2saiqTbTfxNG";
     private String userAddress = "mkw5u34vDegrah5GasD5gKCJQ1NhNGG8tJ";
@@ -39,7 +39,7 @@ public class RegisterTest {
 
     @Before
     public void createAndroidRegisterFactory() throws RegisterException {
-        factory = new RegisterFactory(InstrumentationRegistry.getContext());
+        factory = new RegisterFactoryImpl(InstrumentationRegistry.getContext());
         assertNotNull(factory);
     }
 
