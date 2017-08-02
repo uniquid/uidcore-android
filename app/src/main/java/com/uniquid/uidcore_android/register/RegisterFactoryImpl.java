@@ -15,10 +15,13 @@ import com.uniquid.register.user.UserRegister;
 
 public class RegisterFactoryImpl implements RegisterFactory {
 
-    private Register instance;
+    protected AndroidDataSource androidDataSource;
 
     public RegisterFactoryImpl(final Context context) {
-        instance = new Register(context);
+
+        SQLiteHelper sqLiteHelper = new SQLiteHelper(context);
+
+        androidDataSource = new AndroidDataSource(sqLiteHelper);
     }
 
     /**
@@ -29,7 +32,7 @@ public class RegisterFactoryImpl implements RegisterFactory {
      */
     @Override
     public ProviderRegister getProviderRegister() throws RegisterException {
-        return instance;
+        return new Register(androidDataSource);
     }
 
     /**
@@ -40,11 +43,11 @@ public class RegisterFactoryImpl implements RegisterFactory {
      */
     @Override
     public UserRegister getUserRegister() throws RegisterException {
-        return instance;
+        return new Register(androidDataSource);
     }
 
     @Override
     public TransactionManager getTransactionManager() throws RegisterException {
-        return null;
+        return androidDataSource;
     }
 }

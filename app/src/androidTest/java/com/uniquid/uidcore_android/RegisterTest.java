@@ -44,14 +44,9 @@ public class RegisterTest {
     }
 
     @Test
-    public void testConstructor() {
-        Register register = new Register(InstrumentationRegistry.getContext());
-        assertNotNull(register);
-    }
+    public void testConstructor() throws RegisterException {
 
-    @Test
-    public void testSecondConstructor() {
-        Register register = new Register(InstrumentationRegistry.getContext(), "test");
+        ProviderRegister register = factory.getProviderRegister();
         assertNotNull(register);
     }
 
