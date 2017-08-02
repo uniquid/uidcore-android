@@ -10,7 +10,7 @@ import android.database.sqlite.SQLiteOpenHelper;
  * @author Beatrice Formai
  */
 
-class SQLiteHelper extends SQLiteOpenHelper {
+public class SQLiteHelper extends SQLiteOpenHelper {
     private static final String DB_NAME = "register.db";
     private static final int DB_VERSION = 1;
 

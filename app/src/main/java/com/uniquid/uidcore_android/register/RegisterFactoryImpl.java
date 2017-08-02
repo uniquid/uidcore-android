@@ -1,6 +1,7 @@
 package com.uniquid.uidcore_android.register;
 
 import android.content.Context;
+import android.database.sqlite.SQLiteOpenHelper;
 
 import com.uniquid.register.RegisterFactory;
 import com.uniquid.register.exception.RegisterException;
@@ -19,7 +20,7 @@ public class RegisterFactoryImpl implements RegisterFactory {
 
     public RegisterFactoryImpl(final Context context) {
 
-        SQLiteHelper sqLiteHelper = new SQLiteHelper(context);
+        SQLiteOpenHelper sqLiteHelper = getSQLiteOpenHelper(context);
 
         androidDataSource = new AndroidDataSource(sqLiteHelper);
     }
@@ -49,5 +50,11 @@ public class RegisterFactoryImpl implements RegisterFactory {
     @Override
     public TransactionManager getTransactionManager() throws RegisterException {
         return androidDataSource;
+    }
+
+    protected SQLiteOpenHelper getSQLiteOpenHelper(Context context) {
+
+        return new SQLiteHelper(context);
+
     }
 }

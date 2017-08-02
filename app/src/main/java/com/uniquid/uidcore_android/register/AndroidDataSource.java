@@ -3,6 +3,7 @@ package com.uniquid.uidcore_android.register;
 import com.uniquid.register.transaction.TransactionException;
 import com.uniquid.register.transaction.TransactionManager;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
 
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -16,7 +17,7 @@ public class AndroidDataSource implements TransactionManager {
 
     private SQLiteHelperPool sqLiteHelperPool;
 
-    AndroidDataSource(SQLiteHelper dbHelper) {
+    AndroidDataSource(SQLiteOpenHelper dbHelper) {
 
         this.sqLiteHelperPool = new SQLiteHelperPool(dbHelper);
 

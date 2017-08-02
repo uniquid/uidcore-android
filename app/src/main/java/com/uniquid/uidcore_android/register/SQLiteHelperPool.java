@@ -1,6 +1,7 @@
 package com.uniquid.uidcore_android.register;
 
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
 
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.concurrent.locks.Lock;
@@ -11,10 +12,10 @@ class SQLiteHelperPool {
     private Lock lock;
     private Condition notInUse;
     private boolean inUse;
-    private SQLiteHelper sqLiteHelper;
+    private SQLiteOpenHelper sqLiteHelper;
     private SQLiteDatabase sqLiteDatabase;
 
-    public SQLiteHelperPool(SQLiteHelper sqLiteHelper) {
+    public SQLiteHelperPool(SQLiteOpenHelper sqLiteHelper) {
 
         this.lock = new ReentrantLock();
         this.notInUse = lock.newCondition();
