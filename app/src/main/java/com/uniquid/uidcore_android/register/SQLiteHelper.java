@@ -11,8 +11,8 @@ import android.database.sqlite.SQLiteOpenHelper;
  */
 
 public class SQLiteHelper extends SQLiteOpenHelper {
-    private static final String DB_NAME = "register.db";
-    private static final int DB_VERSION = 1;
+    protected static final String DB_NAME = "register.db";
+    protected static final int DB_VERSION = 1;
 
     //    USER
     static final String TABLE_USER = "user_channel";
@@ -51,14 +51,9 @@ public class SQLiteHelper extends SQLiteOpenHelper {
             PROVIDER_CLM_PROVIDER_ADDRESS + ", " +
             PROVIDER_CLM_USER_ADDRESS + "));";
 
-    SQLiteHelper(Context context) {
+    protected SQLiteHelper(Context context) {
         super(context, DB_NAME, null, DB_VERSION);
     }
-
-    SQLiteHelper(Context context, String name) {
-        super(context, name, null, DB_VERSION);
-    }
-
 
     @Override
     public void onCreate(SQLiteDatabase db) {
