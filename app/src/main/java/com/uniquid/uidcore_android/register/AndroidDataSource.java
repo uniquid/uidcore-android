@@ -10,13 +10,13 @@ import java.util.concurrent.locks.ReentrantLock;
  * Created by giuseppe on 02/08/17.
  */
 
-class AndroidDataSource implements TransactionManager {
+public class AndroidDataSource implements TransactionManager {
 
     private static final ThreadLocal<SQLiteHelperPool.SQLiteDatabaseWrapper> context = new ThreadLocal<SQLiteHelperPool.SQLiteDatabaseWrapper>();
 
     private SQLiteHelperPool sqLiteHelperPool;
 
-    public AndroidDataSource(SQLiteHelper dbHelper) {
+    AndroidDataSource(SQLiteHelper dbHelper) {
 
         this.sqLiteHelperPool = new SQLiteHelperPool(dbHelper);
 
