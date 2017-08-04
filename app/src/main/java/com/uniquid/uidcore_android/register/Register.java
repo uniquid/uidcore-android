@@ -74,6 +74,9 @@ public class Register implements UserRegister, ProviderRegister {
      * */
     public UserChannel getChannelByName(String providerName) throws RegisterException {
 
+        if(providerName == null || providerName.isEmpty())
+            throw new RegisterException("name is not valid");
+
         try {
 
             try (SQLiteHelperPool.SQLiteDatabaseWrapper sqLiteDatabaseWrapper = androidDataSource.getSQLiteDatabaseWrapper()) {
@@ -92,7 +95,7 @@ public class Register implements UserRegister, ProviderRegister {
                     userChannel.setRevokeTxId(cursor.getString(5));
                     cursor.close();
                 } else {
-                    throw new RegisterException("Doesn't exist any record with specified name");
+                    return null;
                 }
 
                 return userChannel;
@@ -115,6 +118,9 @@ public class Register implements UserRegister, ProviderRegister {
      * */
     public UserChannel getChannelByProviderAddress(String address) throws RegisterException {
 
+        if(address == null || address.isEmpty())
+            throw new RegisterException("name is not valid");
+
         try {
 
             try (SQLiteHelperPool.SQLiteDatabaseWrapper sqLiteDatabaseWrapper = androidDataSource.getSQLiteDatabaseWrapper()) {
@@ -134,7 +140,7 @@ public class Register implements UserRegister, ProviderRegister {
                     userChannel.setRevokeTxId(cursor.getString(5));
                     cursor.close();
                 } else {
-                    throw new RegisterException("Doesn't exist any record with specified provider address");
+                    return null;
                 }
                 return userChannel;
             }
@@ -155,6 +161,9 @@ public class Register implements UserRegister, ProviderRegister {
     @Override
     public UserChannel getUserChannelByRevokeTxId(String revokeTxId) throws RegisterException {
 
+        if(revokeTxId == null || revokeTxId.isEmpty())
+            throw new RegisterException("revokeTxId is not valid");
+
         try {
 
             try (SQLiteHelperPool.SQLiteDatabaseWrapper sqLiteDatabaseWrapper = androidDataSource.getSQLiteDatabaseWrapper()) {
@@ -173,7 +182,7 @@ public class Register implements UserRegister, ProviderRegister {
                     userChannel.setRevokeTxId(cursor.getString(5));
                     cursor.close();
                 } else {
-                    throw new RegisterException("Doesn't exist any record with specified revoke txId");
+                    return null;
                 }
                 return userChannel;
 
@@ -196,6 +205,9 @@ public class Register implements UserRegister, ProviderRegister {
     @Override
     public UserChannel getUserChannelByRevokeAddress(String revokeAddress) throws RegisterException {
 
+        if(revokeAddress == null || revokeAddress.isEmpty())
+            throw new RegisterException("revokeAddress is not valid");
+
         try {
 
             try (SQLiteHelperPool.SQLiteDatabaseWrapper sqLiteDatabaseWrapper = androidDataSource.getSQLiteDatabaseWrapper()) {
@@ -215,7 +227,7 @@ public class Register implements UserRegister, ProviderRegister {
                     userChannel.setRevokeTxId(cursor.getString(5));
                     cursor.close();
                 } else {
-                    throw new RegisterException("Doesn't exist any record with the specified name");
+                    return null;
                 }
                 return userChannel;
             }
@@ -233,6 +245,9 @@ public class Register implements UserRegister, ProviderRegister {
      * @throws RegisterException in case a problem occurs or the specified {@code UserChannel} is already present
      * */
     public void insertChannel(UserChannel userChannel) throws RegisterException {
+
+        if(userChannel == null)
+            throw new RegisterException("userchannel is null!");
 
         try {
 
@@ -266,6 +281,9 @@ public class Register implements UserRegister, ProviderRegister {
      * @throws RegisterException in case a problem occurs or the specified {@code UserChannel} doesn't exist
      */
     public void deleteChannel(UserChannel userChannel) throws RegisterException {
+
+        if(userChannel == null)
+            throw new RegisterException("userchannel is null!");
 
         try {
 
@@ -338,6 +356,9 @@ public class Register implements UserRegister, ProviderRegister {
      * */
     public ProviderChannel getChannelByUserAddress(String userAddress) throws RegisterException {
 
+        if(userAddress == null || userAddress.isEmpty())
+            throw new RegisterException("address is not valid");
+
         try {
 
             try (SQLiteHelperPool.SQLiteDatabaseWrapper sqLiteDatabaseWrapper = androidDataSource.getSQLiteDatabaseWrapper()) {
@@ -358,7 +379,7 @@ public class Register implements UserRegister, ProviderRegister {
                     providerChannel.setCreationTime(cursor.getInt(5));
                     cursor.close();
                 } else {
-                    throw new RegisterException("Doesn't exist any record with specified name");
+                    return null;
                 }
                 return providerChannel;
             }
@@ -378,6 +399,9 @@ public class Register implements UserRegister, ProviderRegister {
      * */
     @Override
     public ProviderChannel getChannelByRevokeAddress(String revokeAddress) throws RegisterException {
+
+        if(revokeAddress == null || revokeAddress.isEmpty())
+            throw new RegisterException("revokeAddress is not valid");
 
         try {
 
@@ -412,6 +436,9 @@ public class Register implements UserRegister, ProviderRegister {
 
     @Override
     public ProviderChannel getChannelByRevokeTxId(String revokeTxId) throws RegisterException {
+
+        if(revokeTxId == null || revokeTxId.isEmpty())
+            throw new RegisterException("revokeTxId is not valid");
 
         try {
 
@@ -451,6 +478,9 @@ public class Register implements UserRegister, ProviderRegister {
      * */
     public void insertChannel(ProviderChannel providerChannel) throws RegisterException{
 
+        if(providerChannel == null)
+            throw new RegisterException("providerChannel is null!");
+
         try {
 
             try (SQLiteHelperPool.SQLiteDatabaseWrapper sqLiteDatabaseWrapper = androidDataSource.getSQLiteDatabaseWrapper()) {
@@ -466,13 +496,13 @@ public class Register implements UserRegister, ProviderRegister {
                 values.put(SQLiteHelper.PROVIDER_CLM_CREATION_TIME, providerChannel.getCreationTime());
                 long db_index = db.insert(SQLiteHelper.TABLE_PROVIDER, null, values);
                 if (db_index < 0)
-                    throw new RegisterException("Error inserting new channel");
+                    throw new RegisterException("Exception while insertChannel()");
 
             }
 
         } catch (Throwable t) {
 
-            throw new RegisterException("Exception", t);
+            throw new RegisterException("Exception while insertChannel()", t);
 
         }
     }
@@ -484,17 +514,19 @@ public class Register implements UserRegister, ProviderRegister {
      */
     public void deleteChannel(ProviderChannel providerChannel) throws RegisterException {
 
+        if(providerChannel == null)
+            throw new RegisterException("providerChannel is null!");
+
         try {
 
             try (SQLiteHelperPool.SQLiteDatabaseWrapper sqLiteDatabaseWrapper = androidDataSource.getSQLiteDatabaseWrapper()) {
 
                 SQLiteDatabase db = sqLiteDatabaseWrapper.getSQLiteDatabase();
 
-                int d = db.delete(SQLiteHelper.TABLE_PROVIDER,
+                db.delete(SQLiteHelper.TABLE_PROVIDER,
                         SQLiteHelper.PROVIDER_CLM_PROVIDER_ADDRESS + " = ?",
                         new String[]{providerChannel.getProviderAddress()});
-                if (d == 0)
-                    throw new RegisterException("Channel not present");
+
             }
 
         } catch (Throwable t) {
