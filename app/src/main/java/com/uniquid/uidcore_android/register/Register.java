@@ -36,7 +36,8 @@ public class Register implements UserRegister, ProviderRegister {
 
         try {
 
-            try (SQLiteHelperPool.SQLiteDatabaseWrapper sqLiteDatabaseWrapper = androidDataSource.getSQLiteDatabaseWrapper()) {
+            try (SQLiteHelperPool.SQLiteDatabaseWrapper sqLiteDatabaseWrapper =
+                         androidDataSource.getSQLiteDatabaseWrapper()) {
 
                 SQLiteDatabase db = sqLiteDatabaseWrapper.getSQLiteDatabase();
 
@@ -44,25 +45,14 @@ public class Register implements UserRegister, ProviderRegister {
                 Cursor cursor = db.rawQuery("select * from " + SQLiteHelper.TABLE_USER, null);
                 if (cursor.moveToFirst()) {
                     do {
-                        UserChannel userChannel = new UserChannel();
-                        userChannel.setProviderName(cursor.getString(0));
-                        userChannel.setProviderAddress(cursor.getString(1));
-                        userChannel.setUserAddress(cursor.getString(2));
-                        userChannel.setBitmask(cursor.getString(3));
-                        userChannel.setRevokeAddress(cursor.getString(4));
-                        userChannel.setRevokeTxId(cursor.getString(5));
-                        channels.add(userChannel);
+                        channels.add(createUserChannelFromCursor(cursor));
                     } while (cursor.moveToNext());
                 }
                 cursor.close();
                 return channels;
-
             }
-
         } catch (Throwable t) {
-
             throw new RegisterException("Exception", t);
-
         }
     }
 
@@ -83,31 +73,20 @@ public class Register implements UserRegister, ProviderRegister {
 
                 SQLiteDatabase db = sqLiteDatabaseWrapper.getSQLiteDatabase();
 
-                UserChannel userChannel = new UserChannel();
-                Cursor cursor = db.rawQuery("select * from " + SQLiteHelper.TABLE_USER +
-                        " where " + SQLiteHelper.USER_CLM_PROVIDER_NAME + " = ?", new String[]{providerName});
-                if (cursor.moveToFirst()) {
-                    userChannel.setProviderName(cursor.getString(0));
-                    userChannel.setProviderAddress(cursor.getString(1));
-                    userChannel.setUserAddress(cursor.getString(2));
-                    userChannel.setBitmask(cursor.getString(3));
-                    userChannel.setRevokeAddress(cursor.getString(4));
-                    userChannel.setRevokeTxId(cursor.getString(5));
-                    cursor.close();
-                } else {
-                    return null;
+                try (Cursor cursor = db.rawQuery(
+                        "select * from " + SQLiteHelper.TABLE_USER +
+                                " where " + SQLiteHelper.USER_CLM_PROVIDER_NAME + " = ?",
+                        new String[]{providerName})) {
+                    if (cursor.moveToFirst()) {
+                        return createUserChannelFromCursor(cursor);
+                    } else {
+                        return null;
+                    }
                 }
-
-                return userChannel;
-
             }
-
         } catch (Throwable t) {
-
             throw new RegisterException("Exception", t);
-
         }
-
     }
 
     /**
@@ -123,26 +102,21 @@ public class Register implements UserRegister, ProviderRegister {
 
         try {
 
-            try (SQLiteHelperPool.SQLiteDatabaseWrapper sqLiteDatabaseWrapper = androidDataSource.getSQLiteDatabaseWrapper()) {
+            try (SQLiteHelperPool.SQLiteDatabaseWrapper sqLiteDatabaseWrapper =
+                         androidDataSource.getSQLiteDatabaseWrapper()) {
 
                 SQLiteDatabase db = sqLiteDatabaseWrapper.getSQLiteDatabase();
 
-                UserChannel userChannel = new UserChannel();
-                Cursor cursor = db.rawQuery("select * from " + SQLiteHelper.TABLE_USER +
+                try(Cursor cursor = db.rawQuery(
+                        "select * from " + SQLiteHelper.TABLE_USER +
                                 " where " + SQLiteHelper.USER_CLM_PROVIDER_ADDRESS + " = ?",
-                        new String[]{address});
-                if (cursor.moveToFirst()) {
-                    userChannel.setProviderName(cursor.getString(0));
-                    userChannel.setProviderAddress(cursor.getString(1));
-                    userChannel.setUserAddress(cursor.getString(2));
-                    userChannel.setBitmask(cursor.getString(3));
-                    userChannel.setRevokeAddress(cursor.getString(4));
-                    userChannel.setRevokeTxId(cursor.getString(5));
-                    cursor.close();
-                } else {
-                    return null;
+                        new String[]{address})) {
+                    if (cursor.moveToFirst()) {
+                        return createUserChannelFromCursor(cursor);
+                    } else {
+                        return null;
+                    }
                 }
-                return userChannel;
             }
 
         } catch (Throwable t) {
@@ -165,35 +139,23 @@ public class Register implements UserRegister, ProviderRegister {
             throw new RegisterException("revokeTxId is not valid");
 
         try {
-
-            try (SQLiteHelperPool.SQLiteDatabaseWrapper sqLiteDatabaseWrapper = androidDataSource.getSQLiteDatabaseWrapper()) {
-
+            try (SQLiteHelperPool.SQLiteDatabaseWrapper sqLiteDatabaseWrapper =
+                         androidDataSource.getSQLiteDatabaseWrapper()) {
                 SQLiteDatabase db = sqLiteDatabaseWrapper.getSQLiteDatabase();
-                UserChannel userChannel = new UserChannel();
-                Cursor cursor = db.rawQuery("select * from " + SQLiteHelper.TABLE_USER +
+                try (Cursor cursor = db.rawQuery(
+                        "select * from " + SQLiteHelper.TABLE_USER +
                                 " where " + SQLiteHelper.USER_CLM_REVOKE_TX_ID + " = ?",
-                        new String[]{revokeTxId});
-                if (cursor.moveToFirst()) {
-                    userChannel.setProviderName(cursor.getString(0));
-                    userChannel.setProviderAddress(cursor.getString(1));
-                    userChannel.setUserAddress(cursor.getString(2));
-                    userChannel.setBitmask(cursor.getString(3));
-                    userChannel.setRevokeAddress(cursor.getString(4));
-                    userChannel.setRevokeTxId(cursor.getString(5));
-                    cursor.close();
-                } else {
-                    return null;
+                        new String[]{revokeTxId})) {
+                    if (cursor.moveToFirst()) {
+                        return createUserChannelFromCursor(cursor);
+                    } else {
+                        return null;
+                    }
                 }
-                return userChannel;
-
             }
-
         } catch (Throwable t) {
-
             throw new RegisterException("Exception", t);
-
         }
-
     }
 
     /**
@@ -209,33 +171,21 @@ public class Register implements UserRegister, ProviderRegister {
             throw new RegisterException("revokeAddress is not valid");
 
         try {
-
             try (SQLiteHelperPool.SQLiteDatabaseWrapper sqLiteDatabaseWrapper = androidDataSource.getSQLiteDatabaseWrapper()) {
-
                 SQLiteDatabase db = sqLiteDatabaseWrapper.getSQLiteDatabase();
-
-                UserChannel userChannel = new UserChannel();
-                Cursor cursor = db.rawQuery("select * from " + SQLiteHelper.TABLE_USER +
-                                " where " + SQLiteHelper.USER_CLM_REVOKE_ADDRESS + " = ?",
-                        new String[]{revokeAddress});
-                if (cursor.moveToFirst()) {
-                    userChannel.setProviderName(cursor.getString(0));
-                    userChannel.setProviderAddress(cursor.getString(1));
-                    userChannel.setUserAddress(cursor.getString(2));
-                    userChannel.setBitmask(cursor.getString(3));
-                    userChannel.setRevokeAddress(cursor.getString(4));
-                    userChannel.setRevokeTxId(cursor.getString(5));
-                    cursor.close();
-                } else {
-                    return null;
+                try(Cursor cursor = db.rawQuery(
+                        "select * from " + SQLiteHelper.TABLE_USER + " where " +
+                                SQLiteHelper.USER_CLM_REVOKE_ADDRESS + " = ?",
+                        new String[]{revokeAddress})) {
+                    if (cursor.moveToFirst()) {
+                        return createUserChannelFromCursor(cursor);
+                    } else {
+                        return null;
+                    }
                 }
-                return userChannel;
             }
-
         } catch (Throwable t) {
-
             throw new RegisterException("Exception", t);
-
         }
     }
 
@@ -250,9 +200,8 @@ public class Register implements UserRegister, ProviderRegister {
             throw new RegisterException("userchannel is null!");
 
         try {
-
-            try (SQLiteHelperPool.SQLiteDatabaseWrapper sqLiteDatabaseWrapper = androidDataSource.getSQLiteDatabaseWrapper()) {
-
+            try (SQLiteHelperPool.SQLiteDatabaseWrapper sqLiteDatabaseWrapper =
+                         androidDataSource.getSQLiteDatabaseWrapper()) {
                 SQLiteDatabase db = sqLiteDatabaseWrapper.getSQLiteDatabase();
 
                 ContentValues values = new ContentValues();
@@ -265,13 +214,10 @@ public class Register implements UserRegister, ProviderRegister {
                 long db_index = db.insert(SQLiteHelper.TABLE_USER, null, values);
                 if (db_index < 0)
                     throw new RegisterException("Error inserting new channel");
-
             }
 
         } catch (Throwable t) {
-
             throw new RegisterException("Exception", t);
-
         }
     }
 
@@ -287,7 +233,8 @@ public class Register implements UserRegister, ProviderRegister {
 
         try {
 
-            try (SQLiteHelperPool.SQLiteDatabaseWrapper sqLiteDatabaseWrapper = androidDataSource.getSQLiteDatabaseWrapper()) {
+            try (SQLiteHelperPool.SQLiteDatabaseWrapper sqLiteDatabaseWrapper =
+                         androidDataSource.getSQLiteDatabaseWrapper()) {
 
                 SQLiteDatabase db = sqLiteDatabaseWrapper.getSQLiteDatabase();
 
@@ -317,34 +264,24 @@ public class Register implements UserRegister, ProviderRegister {
     public List<ProviderChannel> getAllChannels() throws RegisterException {
 
         try {
-
-            try (SQLiteHelperPool.SQLiteDatabaseWrapper sqLiteDatabaseWrapper = androidDataSource.getSQLiteDatabaseWrapper()) {
+            try (SQLiteHelperPool.SQLiteDatabaseWrapper sqLiteDatabaseWrapper =
+                         androidDataSource.getSQLiteDatabaseWrapper()) {
 
                 SQLiteDatabase db = sqLiteDatabaseWrapper.getSQLiteDatabase();
-
                 List<ProviderChannel> channels = new ArrayList<>();
 
-                Cursor cursor = db.rawQuery("select * from " + SQLiteHelper.TABLE_PROVIDER, null);
-                if (cursor.moveToFirst()) {
-                    do {
-                        ProviderChannel channel = new ProviderChannel();
-                        channel.setProviderAddress(cursor.getString(0));
-                        channel.setUserAddress(cursor.getString(1));
-                        channel.setBitmask(cursor.getString(2));
-                        channel.setRevokeAddress(cursor.getString(3));
-                        channel.setRevokeTxId(cursor.getString(4));
-                        channel.setCreationTime(cursor.getInt(5));
-                        channels.add(channel);
-                    } while (cursor.moveToNext());
+                try(Cursor cursor = db.rawQuery("select * from " + SQLiteHelper.TABLE_PROVIDER, null)) {
+                    if (cursor.moveToFirst()) {
+                        do {
+                            channels.add(createProviderChannelFromCursor(cursor));
+                        } while (cursor.moveToNext());
+                    }
+                    cursor.close();
                 }
-                cursor.close();
                 return channels;
             }
-
         } catch (Throwable t) {
-
             throw new RegisterException("Exception", t);
-
         }
     }
 
@@ -360,34 +297,21 @@ public class Register implements UserRegister, ProviderRegister {
             throw new RegisterException("address is not valid");
 
         try {
-
-            try (SQLiteHelperPool.SQLiteDatabaseWrapper sqLiteDatabaseWrapper = androidDataSource.getSQLiteDatabaseWrapper()) {
-
+            try (SQLiteHelperPool.SQLiteDatabaseWrapper sqLiteDatabaseWrapper =
+                         androidDataSource.getSQLiteDatabaseWrapper()) {
                 SQLiteDatabase db = sqLiteDatabaseWrapper.getSQLiteDatabase();
-
-                ProviderChannel providerChannel = new ProviderChannel();
-
-                Cursor cursor = db.rawQuery("select * from " + SQLiteHelper.TABLE_PROVIDER +
+                try(Cursor cursor = db.rawQuery("select * from " + SQLiteHelper.TABLE_PROVIDER +
                                 " where " + SQLiteHelper.PROVIDER_CLM_USER_ADDRESS + " = ?",
-                        new String[]{userAddress});
-                if (cursor.moveToFirst()) {
-                    providerChannel.setProviderAddress(cursor.getString(0));
-                    providerChannel.setUserAddress(cursor.getString(1));
-                    providerChannel.setBitmask(cursor.getString(2));
-                    providerChannel.setRevokeAddress(cursor.getString(3));
-                    providerChannel.setRevokeTxId(cursor.getString(4));
-                    providerChannel.setCreationTime(cursor.getInt(5));
-                    cursor.close();
-                } else {
-                    return null;
+                        new String[]{userAddress})) {
+                    if (cursor.moveToFirst()) {
+                        return createProviderChannelFromCursor(cursor);
+                    } else {
+                        return null;
+                    }
                 }
-                return providerChannel;
             }
-
         } catch (Throwable t) {
-
             throw new RegisterException("Exception", t);
-
         }
     }
 
@@ -404,36 +328,30 @@ public class Register implements UserRegister, ProviderRegister {
             throw new RegisterException("revokeAddress is not valid");
 
         try {
-
-            try (SQLiteHelperPool.SQLiteDatabaseWrapper sqLiteDatabaseWrapper = androidDataSource.getSQLiteDatabaseWrapper()) {
-
+            try (SQLiteHelperPool.SQLiteDatabaseWrapper sqLiteDatabaseWrapper =
+                         androidDataSource.getSQLiteDatabaseWrapper()) {
                 SQLiteDatabase db = sqLiteDatabaseWrapper.getSQLiteDatabase();
-
-                ProviderChannel providerChannel = new ProviderChannel();
-                Cursor cursor = db.rawQuery("select * from " + SQLiteHelper.TABLE_PROVIDER +
+                try(Cursor cursor = db.rawQuery("select * from " + SQLiteHelper.TABLE_PROVIDER +
                                 " where " + SQLiteHelper.PROVIDER_CLM_REVOKE_ADDRESS + " = ?",
-                        new String[]{revokeAddress});
-                if (cursor.moveToFirst()) {
-                    providerChannel.setProviderAddress(cursor.getString(0));
-                    providerChannel.setUserAddress(cursor.getString(1));
-                    providerChannel.setBitmask(cursor.getString(2));
-                    providerChannel.setRevokeAddress(cursor.getString(3));
-                    providerChannel.setRevokeTxId(cursor.getString(4));
-                    providerChannel.setCreationTime(cursor.getInt(5));
-                    cursor.close();
-                } else {
-                    return null;
+                        new String[]{revokeAddress})) {
+                    if (cursor.moveToFirst()) {
+                        return createProviderChannelFromCursor(cursor);
+                    } else {
+                        return null;
+                    }
                 }
-                return providerChannel;
             }
-
         } catch (Throwable t) {
-
             throw new RegisterException("Exception", t);
-
         }
     }
 
+    /**
+     * Return an {@code ProviderChannel} from its revoke transaction id or null if no channel is found.
+     * @param revokeTxId the revoke transaction id
+     * @return an {@code ProviderChannel} from its revoke transaction id or null if no channel is found.
+     * @throws RegisterException in case a problem occurs.
+     */
     @Override
     public ProviderChannel getChannelByRevokeTxId(String revokeTxId) throws RegisterException {
 
@@ -441,33 +359,22 @@ public class Register implements UserRegister, ProviderRegister {
             throw new RegisterException("revokeTxId is not valid");
 
         try {
-
-            try (SQLiteHelperPool.SQLiteDatabaseWrapper sqLiteDatabaseWrapper = androidDataSource.getSQLiteDatabaseWrapper()) {
+            try (SQLiteHelperPool.SQLiteDatabaseWrapper sqLiteDatabaseWrapper =
+                         androidDataSource.getSQLiteDatabaseWrapper()) {
 
                 SQLiteDatabase db = sqLiteDatabaseWrapper.getSQLiteDatabase();
-
-                ProviderChannel providerChannel = new ProviderChannel();
-                Cursor cursor = db.rawQuery("select * from " + SQLiteHelper.TABLE_PROVIDER +
+                try (Cursor cursor = db.rawQuery("select * from " + SQLiteHelper.TABLE_PROVIDER +
                                 " where " + SQLiteHelper.PROVIDER_CLM_REVOKE_TX_ID + " = ?",
-                        new String[]{revokeTxId});
-                if (cursor.moveToFirst()) {
-                    providerChannel.setProviderAddress(cursor.getString(0));
-                    providerChannel.setUserAddress(cursor.getString(1));
-                    providerChannel.setBitmask(cursor.getString(2));
-                    providerChannel.setRevokeAddress(cursor.getString(3));
-                    providerChannel.setRevokeTxId(cursor.getString(4));
-                    providerChannel.setCreationTime(cursor.getInt(5));
-                    cursor.close();
-                } else {
-                    return null;
+                        new String[]{revokeTxId})){
+                    if (cursor.moveToFirst()) {
+                        return createProviderChannelFromCursor(cursor);
+                    } else {
+                        return null;
+                    }
                 }
-                return providerChannel;
             }
-
         } catch (Throwable t) {
-
             throw new RegisterException("Exception", t);
-
         }
     }
 
@@ -482,8 +389,8 @@ public class Register implements UserRegister, ProviderRegister {
             throw new RegisterException("providerChannel is null!");
 
         try {
-
-            try (SQLiteHelperPool.SQLiteDatabaseWrapper sqLiteDatabaseWrapper = androidDataSource.getSQLiteDatabaseWrapper()) {
+            try (SQLiteHelperPool.SQLiteDatabaseWrapper sqLiteDatabaseWrapper =
+                         androidDataSource.getSQLiteDatabaseWrapper()) {
 
                 SQLiteDatabase db = sqLiteDatabaseWrapper.getSQLiteDatabase();
 
@@ -497,9 +404,7 @@ public class Register implements UserRegister, ProviderRegister {
                 long db_index = db.insert(SQLiteHelper.TABLE_PROVIDER, null, values);
                 if (db_index < 0)
                     throw new RegisterException("Exception while insertChannel()");
-
             }
-
         } catch (Throwable t) {
 
             throw new RegisterException("Exception while insertChannel()", t);
@@ -518,21 +423,39 @@ public class Register implements UserRegister, ProviderRegister {
             throw new RegisterException("providerChannel is null!");
 
         try {
-
-            try (SQLiteHelperPool.SQLiteDatabaseWrapper sqLiteDatabaseWrapper = androidDataSource.getSQLiteDatabaseWrapper()) {
+            try (SQLiteHelperPool.SQLiteDatabaseWrapper sqLiteDatabaseWrapper =
+                         androidDataSource.getSQLiteDatabaseWrapper()) {
 
                 SQLiteDatabase db = sqLiteDatabaseWrapper.getSQLiteDatabase();
 
                 db.delete(SQLiteHelper.TABLE_PROVIDER,
                         SQLiteHelper.PROVIDER_CLM_PROVIDER_ADDRESS + " = ?",
                         new String[]{providerChannel.getProviderAddress()});
-
             }
-
         } catch (Throwable t) {
-
             throw new RegisterException("Exception", t);
-
         }
+    }
+
+    private UserChannel createUserChannelFromCursor(Cursor cursor) {
+        UserChannel userChannel = new UserChannel();
+        userChannel.setProviderName(cursor.getString(cursor.getColumnIndex(SQLiteHelper.USER_CLM_PROVIDER_NAME)));
+        userChannel.setProviderAddress(cursor.getString(cursor.getColumnIndex(SQLiteHelper.USER_CLM_PROVIDER_ADDRESS)));
+        userChannel.setUserAddress(cursor.getString(cursor.getColumnIndex(SQLiteHelper.USER_CLM_USER_ADDRESS)));
+        userChannel.setBitmask(cursor.getString(cursor.getColumnIndex(SQLiteHelper.USER_CLM_BITMASK)));
+        userChannel.setRevokeAddress(cursor.getString(cursor.getColumnIndex(SQLiteHelper.USER_CLM_REVOKE_ADDRESS)));
+        userChannel.setRevokeTxId(cursor.getString(cursor.getColumnIndex(SQLiteHelper.USER_CLM_REVOKE_TX_ID)));
+        return userChannel;
+    }
+
+    private ProviderChannel createProviderChannelFromCursor(Cursor cursor) {
+        ProviderChannel providerChannel = new ProviderChannel();
+        providerChannel.setProviderAddress(cursor.getString(0));
+        providerChannel.setUserAddress(cursor.getString(1));
+        providerChannel.setBitmask(cursor.getString(2));
+        providerChannel.setRevokeAddress(cursor.getString(3));
+        providerChannel.setRevokeTxId(cursor.getString(4));
+        providerChannel.setCreationTime(cursor.getInt(5));
+        return providerChannel;
     }
 }
