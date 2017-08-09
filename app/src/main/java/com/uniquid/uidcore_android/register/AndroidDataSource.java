@@ -54,13 +54,16 @@ public class AndroidDataSource implements TransactionManager {
 
                 sqLiteDatabaseWrapper.setTxInProgress(false);
 
-                context.remove();
-
             }
 
         } catch (Throwable t) {
 
             throw new TransactionException("Exception committing transaction");
+
+        } finally {
+
+            // remember to remove the wrapper from the threadlocal!
+            context.remove();
 
         }
 
@@ -70,19 +73,23 @@ public class AndroidDataSource implements TransactionManager {
     public void rollbackTransaction() throws TransactionException {
 
         try {
+
             try (SQLiteHelperPool.SQLiteDatabaseWrapper sqLiteDatabaseWrapper = context.get()) {
 
                 sqLiteDatabaseWrapper.getSQLiteDatabase().endTransaction();
 
                 sqLiteDatabaseWrapper.setTxInProgress(false);
 
-                context.remove();
-
             }
 
         } catch (Throwable t) {
 
             throw new TransactionException("Exception rollbacking transaction");
+
+        } finally {
+
+            // remember to remove the wrapper from the threadlocal!
+            context.remove();
 
         }
 
