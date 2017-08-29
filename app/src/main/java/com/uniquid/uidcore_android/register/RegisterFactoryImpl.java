@@ -9,7 +9,6 @@ import com.uniquid.register.provider.ProviderRegister;
 import com.uniquid.register.transaction.TransactionManager;
 import com.uniquid.register.user.UserRegister;
 
-
 /**
  * @author Beatrice Formai
  */
@@ -20,9 +19,11 @@ public class RegisterFactoryImpl implements RegisterFactory {
 
     public RegisterFactoryImpl(final Context context) {
 
-        SQLiteOpenHelper sqLiteHelper = getSQLiteOpenHelper(context);
+        Class sqliteOpenHelperClass = getSQLiteHelperClass();
 
-        androidDataSource = new AndroidDataSource(sqLiteHelper);
+        // Tell android dataSource what implementation to use
+
+        androidDataSource = new AndroidDataSource(context, sqliteOpenHelperClass);
     }
 
     /**
@@ -52,9 +53,9 @@ public class RegisterFactoryImpl implements RegisterFactory {
         return androidDataSource;
     }
 
-    protected SQLiteOpenHelper getSQLiteOpenHelper(Context context) {
+    protected Class getSQLiteHelperClass() {
 
-        return new SQLiteHelper(context);
+        return SQLiteHelper.class;
 
     }
 }

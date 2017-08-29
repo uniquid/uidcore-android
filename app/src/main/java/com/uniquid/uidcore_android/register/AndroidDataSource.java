@@ -1,12 +1,15 @@
 package com.uniquid.uidcore_android.register;
 
+import android.content.Context;
 import android.database.sqlite.SQLiteOpenHelper;
+
+import java.lang.reflect.Constructor;
 
 import com.uniquid.register.transaction.TransactionException;
 import com.uniquid.register.transaction.TransactionManager;
 
 /**
- * Created by giuseppe on 02/08/17.
+ * @author Beatrice Formai
  */
 
 public class AndroidDataSource implements TransactionManager {
@@ -14,10 +17,9 @@ public class AndroidDataSource implements TransactionManager {
     private static final ThreadLocal<SQLiteHelperPool.SQLiteDatabaseWrapper> context = new ThreadLocal<SQLiteHelperPool.SQLiteDatabaseWrapper>();
 
     private SQLiteHelperPool sqLiteHelperPool;
+    AndroidDataSource(final Context context, final Class sqliteOpenHelperClass) {
 
-    AndroidDataSource(SQLiteOpenHelper dbHelper) {
-
-        this.sqLiteHelperPool = new SQLiteHelperPool(dbHelper);
+        this.sqLiteHelperPool = new SQLiteHelperPool(context, sqliteOpenHelperClass);
 
     }
 
@@ -26,9 +28,17 @@ public class AndroidDataSource implements TransactionManager {
 
         try {
 
-            SQLiteHelperPool.SQLiteDatabaseWrapper sqLiteDatabaseWrapper = getSQLiteDatabaseWrapper();
+            SQLiteHelperPool.SQLiteDatabaseWrapper sqLiteDatabaseWrapper = context.get();
 
-            sqLiteDatabaseWrapper.setTxInProgress(true);
+            if (sqLiteDatabaseWrapper != null) {
+
+                // There is already an instance in the context!!!! This is a problem!
+
+                throw new IllegalStateException("A transaction was already started!!!");
+
+            }
+
+            sqLiteDatabaseWrapper = sqLiteHelperPool.borrowObject();
 
             sqLiteDatabaseWrapper.getSQLiteDatabase().beginTransaction();
 
@@ -51,8 +61,6 @@ public class AndroidDataSource implements TransactionManager {
                 sqLiteDatabaseWrapper.getSQLiteDatabase().setTransactionSuccessful();
 
                 sqLiteDatabaseWrapper.getSQLiteDatabase().endTransaction();
-
-                sqLiteDatabaseWrapper.setTxInProgress(false);
 
             }
 
@@ -77,8 +85,6 @@ public class AndroidDataSource implements TransactionManager {
             try (SQLiteHelperPool.SQLiteDatabaseWrapper sqLiteDatabaseWrapper = context.get()) {
 
                 sqLiteDatabaseWrapper.getSQLiteDatabase().endTransaction();
-
-                sqLiteDatabaseWrapper.setTxInProgress(false);
 
             }
 

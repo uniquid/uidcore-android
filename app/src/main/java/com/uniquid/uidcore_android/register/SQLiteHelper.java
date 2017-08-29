@@ -51,7 +51,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
             PROVIDER_CLM_PROVIDER_ADDRESS + ", " +
             PROVIDER_CLM_USER_ADDRESS + "));";
 
-    protected SQLiteHelper(Context context) {
+    public SQLiteHelper(Context context) {
         super(context, DB_NAME, null, DB_VERSION);
     }
 

@@ -2,4 +2,7 @@
 
     package="com.uniquid.uidcore_android">
 
+    <application
+        android:allowBackup="false" />
+
 </manifest>
