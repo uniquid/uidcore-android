@@ -1,12 +1,12 @@
 package com.uniquid.uidcore_android.register;
 
 import android.content.Context;
-import android.database.sqlite.SQLiteOpenHelper;
-
-import java.lang.reflect.Constructor;
 
 import com.uniquid.register.transaction.TransactionException;
 import com.uniquid.register.transaction.TransactionManager;
+
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * @author Beatrice Formai
@@ -17,9 +17,12 @@ public class AndroidDataSource implements TransactionManager {
     private static final ThreadLocal<SQLiteHelperPool.SQLiteDatabaseWrapper> context = new ThreadLocal<SQLiteHelperPool.SQLiteDatabaseWrapper>();
 
     private SQLiteHelperPool sqLiteHelperPool;
+    private final Lock writerLock;
+
     AndroidDataSource(final Context context, final Class sqliteOpenHelperClass) {
 
         this.sqLiteHelperPool = new SQLiteHelperPool(context, sqliteOpenHelperClass);
+        this.writerLock = new ReentrantLock();
 
     }
 
@@ -27,6 +30,8 @@ public class AndroidDataSource implements TransactionManager {
     public void startTransaction() throws TransactionException {
 
         try {
+
+            writerLock.lock();
 
             SQLiteHelperPool.SQLiteDatabaseWrapper sqLiteDatabaseWrapper = context.get();
 
@@ -40,7 +45,7 @@ public class AndroidDataSource implements TransactionManager {
 
             sqLiteDatabaseWrapper = sqLiteHelperPool.borrowObject();
 
-            sqLiteDatabaseWrapper.getSQLiteDatabase().beginTransaction();
+            sqLiteDatabaseWrapper.getSQLiteDatabase().beginTransactionNonExclusive();
 
             context.set(sqLiteDatabaseWrapper);
 
@@ -70,6 +75,8 @@ public class AndroidDataSource implements TransactionManager {
 
         } finally {
 
+            writerLock.unlock();
+
             // remember to remove the wrapper from the threadlocal!
             context.remove();
 
@@ -93,6 +100,8 @@ public class AndroidDataSource implements TransactionManager {
             throw new TransactionException("Exception rollbacking transaction");
 
         } finally {
+
+            writerLock.unlock();
 
             // remember to remove the wrapper from the threadlocal!
             context.remove();

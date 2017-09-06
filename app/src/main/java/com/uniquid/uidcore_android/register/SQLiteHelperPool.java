@@ -5,9 +5,8 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 import java.lang.reflect.Constructor;
-import java.util.concurrent.locks.Condition;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Beatrice Formai
@@ -15,61 +14,49 @@ import java.util.concurrent.locks.ReentrantLock;
 
 public class SQLiteHelperPool {
 
-    private Lock lock;
-    private Condition notInUse;
-    private boolean inUse;
     private final Class sqliteOpenHelperClass;
     private final Context context;
-    private SQLiteOpenHelper outerSqLiteOpenHelper;
-    private SQLiteDatabase outerSqLiteDatabase;
+    private final List<SQLiteDatabaseWrapper> pool;
+    private boolean initialized;
 
     protected SQLiteHelperPool(final Context context, final Class sqliteOpenHelperClass) {
 
-        this.lock = new ReentrantLock();
-        this.notInUse = lock.newCondition();
-        this.inUse = false;
         this.context = context;
         this.sqliteOpenHelperClass = sqliteOpenHelperClass;
+        this.pool = new ArrayList<SQLiteDatabaseWrapper>();
+        this.initialized = false;
 
     }
 
     public SQLiteDatabaseWrapper borrowObject() throws Exception {
 
-        lock.lock();
+        synchronized (pool) {
 
-        try {
+            if (!initialized) {
 
-            //Wait until somebody release DB Access
-            while (inUse) {
+                for (int i = 0; i < 3; i++) {
 
-                notInUse.await();
+                    // Initialize!
+                    SQLiteOpenHelper outerSqLiteOpenHelper = createSQLiteOpenHelperInstance();
 
-            }
+                    pool.add(new SQLiteDatabaseWrapper(outerSqLiteOpenHelper));
 
-            // Initialize!
-            if (outerSqLiteOpenHelper == null) {
+                }
 
-                outerSqLiteOpenHelper = createSQLiteOpenHelperInstance();
-
-            }
-
-            if (outerSqLiteDatabase == null) {
-
-                outerSqLiteDatabase = outerSqLiteOpenHelper.getWritableDatabase();
+                initialized = true;
 
             }
 
-            // set in use
-            inUse = true;
+            // wait until there is an available connection
+            while (pool.size() == 0) {
 
-            return new SQLiteDatabaseWrapper(outerSqLiteDatabase);
+                pool.wait();
 
-        } finally {
+            }
 
-            lock.unlock();
+            return pool.remove(0);
 
         }
-
 
     }
 
@@ -85,35 +72,29 @@ public class SQLiteHelperPool {
 
     public class SQLiteDatabaseWrapper implements AutoCloseable {
 
+        private SQLiteOpenHelper wrappedSqLiteOpenHelper;
         private SQLiteDatabase wrappedSqLiteDatabase;
 
-        public SQLiteDatabaseWrapper(SQLiteDatabase sqLiteDatabase) {
+        public SQLiteDatabaseWrapper(SQLiteOpenHelper sqLiteOpenHelper) {
 
-            this.wrappedSqLiteDatabase = sqLiteDatabase;
+            this.wrappedSqLiteOpenHelper = sqLiteOpenHelper;
+            this.wrappedSqLiteDatabase = sqLiteOpenHelper.getWritableDatabase();
 
         }
 
         @Override
         public void close() throws Exception {
 
-            lock.lock();
+            // In case we are in a transaction we should not inform other that we are ready!
+            if (!wrappedSqLiteDatabase.inTransaction()) {
 
-            try {
+                synchronized (pool) {
 
-                // In case we are in a transaction we should not inform other that we are ready!
-                if (!wrappedSqLiteDatabase.inTransaction()) {
-                    outerSqLiteOpenHelper.close(); // Close the database!
-                    outerSqLiteOpenHelper = null; // Destroy reference!
-                    outerSqLiteDatabase = null; // Destory reference!
+                    pool.add(this);
 
-                    // set not in use
-                    inUse = false;
-                    notInUse.signal();
+                    pool.notify();
+
                 }
-
-            } finally {
-
-                lock.unlock();
 
             }
 

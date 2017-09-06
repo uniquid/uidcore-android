@@ -62,6 +62,11 @@ public class SQLiteHelper extends SQLiteOpenHelper {
     }
 
     @Override
+    public void onConfigure(SQLiteDatabase db) {
+        setWriteAheadLoggingEnabled(true);
+    }
+
+    @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         // drop current table
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_USER);
