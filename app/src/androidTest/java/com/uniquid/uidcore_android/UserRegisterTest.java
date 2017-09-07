@@ -18,11 +18,12 @@ import static junit.framework.Assert.assertNotNull;
 public class UserRegisterTest extends com.uniquid.register.user.UserRegisterTest {
 
     private RegisterFactoryImpl factory;
+    private final int connections = 7;
 
     @Before
     public void createAndroidRegisterFactory() throws RegisterException {
         InstrumentationRegistry.getContext().deleteDatabase("register.db");
-        factory = new RegisterFactoryImpl(InstrumentationRegistry.getContext());
+        factory = new RegisterFactoryImpl(InstrumentationRegistry.getContext(), connections);
         assertNotNull(factory);
     }
 

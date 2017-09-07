@@ -14,14 +14,14 @@ import java.util.concurrent.locks.ReentrantLock;
 
 public class AndroidDataSource implements TransactionManager {
 
-    private static final ThreadLocal<SQLiteHelperPool.SQLiteDatabaseWrapper> context = new ThreadLocal<SQLiteHelperPool.SQLiteDatabaseWrapper>();
+    private static final ThreadLocal<SQLiteHelperPool.SQLiteDatabaseWrapper> context = new ThreadLocal<>();
 
     private SQLiteHelperPool sqLiteHelperPool;
     private final Lock writerLock;
 
-    AndroidDataSource(final Context context, final Class sqliteOpenHelperClass) {
+    AndroidDataSource(final Context context, final Class sqliteOpenHelperClass, int connections) {
 
-        this.sqLiteHelperPool = new SQLiteHelperPool(context, sqliteOpenHelperClass);
+        this.sqLiteHelperPool = new SQLiteHelperPool(context, sqliteOpenHelperClass, connections);
         this.writerLock = new ReentrantLock();
 
     }

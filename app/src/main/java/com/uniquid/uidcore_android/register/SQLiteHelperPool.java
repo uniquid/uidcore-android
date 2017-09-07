@@ -18,14 +18,15 @@ public class SQLiteHelperPool {
     private final Context context;
     private final List<SQLiteDatabaseWrapper> pool;
     private boolean initialized;
+    private int size = 3;
 
-    protected SQLiteHelperPool(final Context context, final Class sqliteOpenHelperClass) {
+    protected SQLiteHelperPool(final Context context, final Class sqliteOpenHelperClass, int size) {
 
         this.context = context;
         this.sqliteOpenHelperClass = sqliteOpenHelperClass;
-        this.pool = new ArrayList<SQLiteDatabaseWrapper>();
+        this.pool = new ArrayList<>();
         this.initialized = false;
-
+        this.size = size;
     }
 
     public SQLiteDatabaseWrapper borrowObject() throws Exception {
@@ -34,7 +35,7 @@ public class SQLiteHelperPool {
 
             if (!initialized) {
 
-                for (int i = 0; i < 3; i++) {
+                for (int i = 0; i < size; i++) {
 
                     // Initialize!
                     SQLiteOpenHelper outerSqLiteOpenHelper = createSQLiteOpenHelperInstance();

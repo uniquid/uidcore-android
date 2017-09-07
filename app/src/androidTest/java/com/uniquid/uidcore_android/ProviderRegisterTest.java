@@ -21,11 +21,12 @@ import static junit.framework.Assert.assertNotNull;
 public class ProviderRegisterTest extends com.uniquid.register.provider.ProviderRegisterTest {
 
     private RegisterFactoryImpl factory;
+    private final int connections = 7;
 
     @Before
     public void createAndroidRegisterFactory() throws RegisterException {
         InstrumentationRegistry.getContext().deleteDatabase("register.db");
-        factory = new RegisterFactoryImpl(InstrumentationRegistry.getContext());
+        factory = new RegisterFactoryImpl(InstrumentationRegistry.getContext(), connections);
         assertNotNull(factory);
     }
 

@@ -17,13 +17,13 @@ public class RegisterFactoryImpl implements RegisterFactory {
 
     protected AndroidDataSource androidDataSource;
 
-    public RegisterFactoryImpl(final Context context) {
+    public RegisterFactoryImpl(final Context context, int connections) {
 
         Class sqliteOpenHelperClass = getSQLiteHelperClass();
 
         // Tell android dataSource what implementation to use
 
-        androidDataSource = new AndroidDataSource(context, sqliteOpenHelperClass);
+        androidDataSource = new AndroidDataSource(context, sqliteOpenHelperClass, connections);
     }
 
     /**
