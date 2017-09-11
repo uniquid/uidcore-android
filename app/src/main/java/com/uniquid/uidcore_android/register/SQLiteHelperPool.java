@@ -9,6 +9,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * Helper to manage the connections to the database
+ *
  * @author Beatrice Formai
  */
 
@@ -18,14 +20,15 @@ public class SQLiteHelperPool {
     private final Context context;
     private final List<SQLiteDatabaseWrapper> pool;
     private boolean initialized;
+    private int connections = 3;
 
-    protected SQLiteHelperPool(final Context context, final Class sqliteOpenHelperClass) {
+    protected SQLiteHelperPool(final Context context, final Class sqliteOpenHelperClass, int connections) {
 
         this.context = context;
         this.sqliteOpenHelperClass = sqliteOpenHelperClass;
-        this.pool = new ArrayList<SQLiteDatabaseWrapper>();
+        this.pool = new ArrayList<>();
         this.initialized = false;
-
+        this.connections = connections;
     }
 
     public SQLiteDatabaseWrapper borrowObject() throws Exception {
@@ -34,7 +37,7 @@ public class SQLiteHelperPool {
 
             if (!initialized) {
 
-                for (int i = 0; i < 3; i++) {
+                for (int i = 0; i < connections; i++) {
 
                     // Initialize!
                     SQLiteOpenHelper outerSqLiteOpenHelper = createSQLiteOpenHelperInstance();

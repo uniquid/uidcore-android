@@ -9,19 +9,27 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
+ * Class to manage database transactions
+ *
  * @author Beatrice Formai
  */
 
 public class AndroidDataSource implements TransactionManager {
 
-    private static final ThreadLocal<SQLiteHelperPool.SQLiteDatabaseWrapper> context = new ThreadLocal<SQLiteHelperPool.SQLiteDatabaseWrapper>();
+    private static final ThreadLocal<SQLiteHelperPool.SQLiteDatabaseWrapper> context = new ThreadLocal<>();
 
     private SQLiteHelperPool sqLiteHelperPool;
     private final Lock writerLock;
 
-    AndroidDataSource(final Context context, final Class sqliteOpenHelperClass) {
+    /**
+     * Create a new {@link AndroidDataSource}
+     * @param context the application {@link Context}
+     * @param sqliteOpenHelperClass the helper class for the connections
+     * @param connections number of allowed connections to the database at the same time
+     * */
+    AndroidDataSource(final Context context, final Class sqliteOpenHelperClass, int connections) {
 
-        this.sqLiteHelperPool = new SQLiteHelperPool(context, sqliteOpenHelperClass);
+        this.sqLiteHelperPool = new SQLiteHelperPool(context, sqliteOpenHelperClass, connections);
         this.writerLock = new ReentrantLock();
 
     }

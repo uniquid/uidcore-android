@@ -1,7 +1,6 @@
 package com.uniquid.uidcore_android.register;
 
 import android.content.Context;
-import android.database.sqlite.SQLiteOpenHelper;
 
 import com.uniquid.register.RegisterFactory;
 import com.uniquid.register.exception.RegisterException;
@@ -10,6 +9,8 @@ import com.uniquid.register.transaction.TransactionManager;
 import com.uniquid.register.user.UserRegister;
 
 /**
+ * Concrete class implementation of {@code RegisterFactory} that uses SQLite as data store.
+ *
  * @author Beatrice Formai
  */
 
@@ -17,13 +18,17 @@ public class RegisterFactoryImpl implements RegisterFactory {
 
     protected AndroidDataSource androidDataSource;
 
-    public RegisterFactoryImpl(final Context context) {
+    /**
+     * Create a new RegisterFactoryImpl
+     * @param context the application context
+     * @param connections the number of allowed connections to the database
+     * */
+    public RegisterFactoryImpl(final Context context, int connections) {
 
         Class sqliteOpenHelperClass = getSQLiteHelperClass();
 
         // Tell android dataSource what implementation to use
-
-        androidDataSource = new AndroidDataSource(context, sqliteOpenHelperClass);
+        androidDataSource = new AndroidDataSource(context, sqliteOpenHelperClass, connections);
     }
 
     /**
