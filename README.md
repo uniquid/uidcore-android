@@ -56,9 +56,7 @@ public class MainActivity extends Activity implements UniquidNodeEventListener {
                     
         // start simplifier
         simplifier.start();
-        
-        ...
-        
+                
     }
     
     @Override
