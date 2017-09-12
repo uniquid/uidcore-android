@@ -16,19 +16,19 @@ import static junit.framework.Assert.assertNotNull;
 public class RegisterFactoryTest {
     @Test
     public void testConstructor() throws RegisterException {
-        RegisterFactoryImpl registerFactory = new RegisterFactoryImpl(InstrumentationRegistry.getContext());
+        RegisterFactoryImpl registerFactory = new RegisterFactoryImpl(InstrumentationRegistry.getContext(), 5);
         assertNotNull(registerFactory);
     }
 
     @Test
     public void testGetProviderRegister() throws RegisterException {
-        RegisterFactoryImpl registerFactory = new RegisterFactoryImpl(InstrumentationRegistry.getContext());
+        RegisterFactoryImpl registerFactory = new RegisterFactoryImpl(InstrumentationRegistry.getContext(), 5);
         assertNotNull(registerFactory.getProviderRegister());
     }
 
     @Test
     public void testGetUserRegister() throws RegisterException {
-        RegisterFactoryImpl registerFactory = new RegisterFactoryImpl(InstrumentationRegistry.getContext());
+        RegisterFactoryImpl registerFactory = new RegisterFactoryImpl(InstrumentationRegistry.getContext(), 5);
         assertNotNull(registerFactory.getUserRegister());
     }
 }

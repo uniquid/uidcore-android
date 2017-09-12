@@ -5,9 +5,6 @@ import android.support.test.InstrumentationRegistry;
 import com.uniquid.register.exception.RegisterException;
 import com.uniquid.register.provider.ProviderRegister;
 import com.uniquid.uidcore_android.register.RegisterFactoryImpl;
-import com.uniquid.uidcore_android.register.SQLiteHelper;
-
-import junit.framework.TestCase;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -25,7 +22,7 @@ public class ProviderRegisterTest extends com.uniquid.register.provider.Provider
     @Before
     public void createAndroidRegisterFactory() throws RegisterException {
         InstrumentationRegistry.getContext().deleteDatabase("register.db");
-        factory = new RegisterFactoryImpl(InstrumentationRegistry.getContext());
+        factory = new RegisterFactoryImpl(InstrumentationRegistry.getContext(), 5);
         assertNotNull(factory);
     }
 

@@ -22,7 +22,7 @@ public class UserRegisterTest extends com.uniquid.register.user.UserRegisterTest
     @Before
     public void createAndroidRegisterFactory() throws RegisterException {
         InstrumentationRegistry.getContext().deleteDatabase("register.db");
-        factory = new RegisterFactoryImpl(InstrumentationRegistry.getContext());
+        factory = new RegisterFactoryImpl(InstrumentationRegistry.getContext(), 5);
         assertNotNull(factory);
     }
 

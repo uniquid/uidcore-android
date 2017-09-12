@@ -118,6 +118,11 @@ public class AndroidDataSource implements TransactionManager {
 
     }
 
+    @Override
+    public boolean insideTransaction() {
+        return (context.get() != null);
+    }
+
     public SQLiteHelperPool.SQLiteDatabaseWrapper getSQLiteDatabaseWrapper() throws Exception {
 
         SQLiteHelperPool.SQLiteDatabaseWrapper sqLiteDatabaseWrapper = context.get();

@@ -15,6 +15,6 @@ public class AndroidDataSourceTest extends TransactionManagerTest {
 
     @Override
     public RegisterFactory getRegisterFactory() throws RegisterException {
-        return new RegisterFactoryImpl(InstrumentationRegistry.getContext());
+        return new RegisterFactoryImpl(InstrumentationRegistry.getContext(), 5);
     }
 }
