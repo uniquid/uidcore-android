@@ -34,6 +34,20 @@ public class AndroidDataSource implements TransactionManager {
 
     }
 
+    /**
+     * Create a new {@link AndroidDataSource}
+     * @param context the application {@link Context}
+     * @param sqliteOpenHelperClass the helper class for the connections
+     * @param connections number of allowed connections to the database at the same time
+     * */
+    AndroidDataSource(final Context context, final Class sqliteOpenHelperClass, int connections, String dbName) {
+
+        this.sqLiteHelperPool = new SQLiteHelperPool(context, sqliteOpenHelperClass, connections, dbName);
+        this.writerLock = new ReentrantLock();
+
+    }
+
+
     @Override
     public void startTransaction() throws TransactionException {
 

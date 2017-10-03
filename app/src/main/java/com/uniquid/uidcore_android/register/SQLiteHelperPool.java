@@ -20,6 +20,7 @@ public class SQLiteHelperPool {
     private final Context context;
     private final List<SQLiteDatabaseWrapper> pool;
     private boolean initialized;
+    private String dbName;
     private int connections = 3;
 
     protected SQLiteHelperPool(final Context context, final Class sqliteOpenHelperClass, int connections) {
@@ -31,6 +32,14 @@ public class SQLiteHelperPool {
         this.connections = connections;
     }
 
+    protected SQLiteHelperPool(final Context context, final Class sqliteOpenHelperClass, int connections, String dbName) {
+
+        this(context, sqliteOpenHelperClass, connections);
+
+        this.dbName = dbName;
+
+    }
+
     public SQLiteDatabaseWrapper borrowObject() throws Exception {
 
         synchronized (pool) {
@@ -40,7 +49,12 @@ public class SQLiteHelperPool {
                 for (int i = 0; i < connections; i++) {
 
                     // Initialize!
-                    SQLiteOpenHelper outerSqLiteOpenHelper = createSQLiteOpenHelperInstance();
+                    SQLiteOpenHelper outerSqLiteOpenHelper;
+                    if(dbName == null)
+                         outerSqLiteOpenHelper = createSQLiteOpenHelperInstance();
+
+                    else
+                        outerSqLiteOpenHelper = createSQLiteOpenHelperInstance(dbName);
 
                     pool.add(new SQLiteDatabaseWrapper(outerSqLiteOpenHelper));
 
@@ -70,6 +84,16 @@ public class SQLiteHelperPool {
 
         // We create the instance!
         return (SQLiteOpenHelper) cons.newInstance(context);
+
+    }
+
+    protected SQLiteOpenHelper createSQLiteOpenHelperInstance(String dbName) throws Exception {
+
+        // We want the constructor with Context parameter
+        Constructor<?> cons = sqliteOpenHelperClass.getConstructor(new Class[] { Context.class, String.class });
+
+        // We create the instance!
+        return (SQLiteOpenHelper) cons.newInstance(context, dbName);
 
     }
 

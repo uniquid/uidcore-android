@@ -32,6 +32,20 @@ public class RegisterFactoryImpl implements RegisterFactory {
     }
 
     /**
+     * Create a new RegisterFactoryImpl
+     * @param context the application context
+     * @param connections the number of allowed connections to the database
+     * */
+    public RegisterFactoryImpl(final Context context, int connections, String dbName) {
+
+        Class sqliteOpenHelperClass = getSQLiteHelperClass();
+
+        // Tell android dataSource what implementation to use
+        androidDataSource = new AndroidDataSource(context, sqliteOpenHelperClass, connections, dbName);
+    }
+
+
+    /**
      * Returns a ProviderRegister instance
      *
      * @return a ProviderRegister instance
