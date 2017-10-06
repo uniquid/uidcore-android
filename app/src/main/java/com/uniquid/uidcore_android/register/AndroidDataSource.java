@@ -39,6 +39,7 @@ public class AndroidDataSource implements TransactionManager {
      * @param context the application {@link Context}
      * @param sqliteOpenHelperClass the helper class for the connections
      * @param connections number of allowed connections to the database at the same time
+     * @param dbName name of the database
      * */
     AndroidDataSource(final Context context, final Class sqliteOpenHelperClass, int connections, String dbName) {
 
