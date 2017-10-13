@@ -48,7 +48,6 @@ public class AndroidDataSource implements TransactionManager {
 
     }
 
-
     @Override
     public void startTransaction() throws TransactionException {
 
@@ -100,7 +99,6 @@ public class AndroidDataSource implements TransactionManager {
 
             writerLock.unlock();
 
-            // remember to remove the wrapper from the threadlocal!
             context.remove();
 
         }

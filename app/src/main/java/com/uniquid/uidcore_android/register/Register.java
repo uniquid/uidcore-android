@@ -31,6 +31,7 @@ public class Register implements UserRegister, ProviderRegister {
      * Return a List containing all the {@code UserChannel} present in the data store.
      * In case no {@code UserChannel} is present an empty list is returned.
      * @return a List containing all the {@code UserChannel} present in the data store or an empty list.
+     * @throws RegisterException in case an error occurs
      * */
     public List<UserChannel> getAllUserChannels() throws RegisterException {
 
@@ -59,8 +60,8 @@ public class Register implements UserRegister, ProviderRegister {
     /**
      * Return a {@code UserChannel} with the specified provider name.
      * @param providerName the name of the other machine.
-     * @return the {@code UserChannel} with the specified name.
-     * @throws RegisterException if there is no {@code UserChannel} with the specified name.
+     * @return the {@code UserChannel} with the specified name or null.
+     * @throws RegisterException if providerName is empty or null, or an error occurs.
      * */
     public UserChannel getChannelByName(String providerName) throws RegisterException {
 
@@ -92,8 +93,8 @@ public class Register implements UserRegister, ProviderRegister {
     /**
      * Return a {@code UserChannel} with the specified provider address.
      * @param address the address of the provider.
-     * @return a {@code UserChannel} that involves the specified provider.
-     * @throws RegisterException if there is no {@code UserChannel} with the specified provider address.
+     * @return a {@code UserChannel} that involves the specified provider or null if there is no {@code UserChannel} with the specified provider address
+     * @throws RegisterException if address is null or empty, or an error occurs.
      * */
     public UserChannel getChannelByProviderAddress(String address) throws RegisterException {
 
@@ -129,8 +130,8 @@ public class Register implements UserRegister, ProviderRegister {
     /**
      * Return a {@code UserChannel} by the transaction identifier of the revoke contract
      * @param revokeTxId the transaction identifier of the revoke contract
-     * @return {@code UserChannel} that involves the specified revokeTxId
-     * @throws RegisterException if there is no record with the specified revoketxId
+     * @return {@code UserChannel} that involves the specified revokeTxId or null if there is no record with the specified revoketxId
+     * @throws RegisterException id revokeTxid is null or empty, or an error occurs
      * */
     @Override
     public UserChannel getUserChannelByRevokeTxId(String revokeTxId) throws RegisterException {
@@ -161,8 +162,8 @@ public class Register implements UserRegister, ProviderRegister {
     /**
      * Return a {@code UserChannel} by the address of the revoker
      * @param revokeAddress the address of the revoker
-     * @return {@code UserChannel} object that involves the specified revokeAddress
-     * @throws RegisterException if there is no {@code UserChannel} with the specified revokeAddress
+     * @return {@code UserChannel} object that involves the specified revokeAddress, or null if there is no {@code UserChannel} with the specified revokeAddress
+     * @throws RegisterException if revokeAddress is null or empty, or an error occurs
      * */
     @Override
     public UserChannel getUserChannelByRevokeAddress(String revokeAddress) throws RegisterException {
@@ -192,7 +193,7 @@ public class Register implements UserRegister, ProviderRegister {
     /**
      * Creates a {@code UserChannel} by persisting its content in the data store.
      * @param userChannel the {@code UserChannel} to persist.
-     * @throws RegisterException in case a problem occurs or the specified {@code UserChannel} is already present
+     * @throws RegisterException in case a problem occurs or the specified {@code UserChannel} is already present or userChannel is null
      * */
     public void insertChannel(UserChannel userChannel) throws RegisterException {
 
@@ -224,7 +225,7 @@ public class Register implements UserRegister, ProviderRegister {
     /**
      * Deletes a {@code UserChannel} that matches the specified value.
      * @param userChannel the {@code UserChannel} to delete from the data store.
-     * @throws RegisterException in case a problem occurs or the specified {@code UserChannel} doesn't exist
+     * @throws RegisterException in case a problem occurs or the specified {@code UserChannel} doesn't exist or is null
      */
     public void deleteChannel(UserChannel userChannel) throws RegisterException {
 
@@ -259,7 +260,8 @@ public class Register implements UserRegister, ProviderRegister {
     /**
      * Returns a List containing all the {@code ProviderChannel} present in the data store.
      * In case no {@code ProviderChannel} is present an empty list is returned.
-     * @return a List containing all the {@code ProviderChannel} present in the data store or an empty List.
+     * @return a List containing all the {@code ProviderChannel} present in the data store or an empty List
+     * @throws RegisterException in case an error occurs
      */
     public List<ProviderChannel> getAllChannels() throws RegisterException {
 
@@ -286,10 +288,10 @@ public class Register implements UserRegister, ProviderRegister {
     }
 
     /**
-     * Return a {@code ProviderChannel} with the specified user address.
-     * @param userAddress the address of the other machine.
-     * @return the {@code ProviderChannel} with the specified user address.
-     * @throws RegisterException if there is no {@code ProviderChannel} with the specified user address.
+     * Return a {@code ProviderChannel} with the specified user address
+     * @param userAddress the address of the other machine
+     * @return the {@code ProviderChannel} with the specified user address or null if there is no {@code ProviderChannel} with the specified user address
+     * @throws RegisterException if userAddress is null or empty, or in case an error occurs
      * */
     public ProviderChannel getChannelByUserAddress(String userAddress) throws RegisterException {
 
@@ -319,7 +321,7 @@ public class Register implements UserRegister, ProviderRegister {
      * Return a {@code ProviderChannel} with the specified revoke address.
      * @param revokeAddress the address of the revoker machine.
      * @return the {@code ProviderChannel} with the specified revoke address or null if there is no {@code ProviderChannel} with the specified revoke address.
-     * @throws RegisterException in case an error occurs.
+     * @throws RegisterException if revokeAddress is null or empty, or in case an error occurs.
      * */
     @Override
     public ProviderChannel getChannelByRevokeAddress(String revokeAddress) throws RegisterException {
@@ -347,10 +349,10 @@ public class Register implements UserRegister, ProviderRegister {
     }
 
     /**
-     * Return an {@code ProviderChannel} from its revoke transaction id or null if no channel is found.
+     * Return an {@code ProviderChannel} from its revoke transaction id or null if no channel is found
      * @param revokeTxId the revoke transaction id
-     * @return an {@code ProviderChannel} from its revoke transaction id or null if no channel is found.
-     * @throws RegisterException in case a problem occurs.
+     * @return a {@code ProviderChannel} from its revoke transaction id or null if no channel is found
+     * @throws RegisterException if revokeTxId is null or empty, or in case a problem occurs
      */
     @Override
     public ProviderChannel getChannelByRevokeTxId(String revokeTxId) throws RegisterException {
@@ -379,8 +381,8 @@ public class Register implements UserRegister, ProviderRegister {
     }
 
     /**
-     * Creates a {@code ProviderChannel} by persisting its content in the data store.
-     * @param providerChannel the {@code ProviderChannel} to persist.
+     * Creates a {@code ProviderChannel} by persisting its content in the data store
+     * @param providerChannel the {@code ProviderChannel} to persist
      * @throws RegisterException in case a problem occurs or the specified {@code ProviderChannel} is already present
      * */
     public void insertChannel(ProviderChannel providerChannel) throws RegisterException{
@@ -413,8 +415,8 @@ public class Register implements UserRegister, ProviderRegister {
     }
 
     /**
-     * Deletes a {@code ProviderChannel} that matches the specified value.
-     * @param providerChannel the {@code ProviderChannel} to delete from the data store.
+     * Deletes a {@code ProviderChannel} that matches the specified value
+     * @param providerChannel the {@code ProviderChannel} to delete from the data store
      * @throws RegisterException in case a problem occurs or the specified {@code ProviderChannel} doesn't exist
      */
     public void deleteChannel(ProviderChannel providerChannel) throws RegisterException {

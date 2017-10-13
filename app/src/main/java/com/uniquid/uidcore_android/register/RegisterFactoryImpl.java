@@ -35,6 +35,7 @@ public class RegisterFactoryImpl implements RegisterFactory {
      * Create a new RegisterFactoryImpl
      * @param context the application context
      * @param connections the number of allowed connections to the database
+     * @param dbName name of the database to create
      * */
     public RegisterFactoryImpl(final Context context, int connections, String dbName) {
 
@@ -43,7 +44,6 @@ public class RegisterFactoryImpl implements RegisterFactory {
         // Tell android dataSource what implementation to use
         androidDataSource = new AndroidDataSource(context, sqliteOpenHelperClass, connections, dbName);
     }
-
 
     /**
      * Returns a ProviderRegister instance

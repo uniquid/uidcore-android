@@ -17,24 +17,30 @@ public class MainActivity extends Activity implements UniquidNodeEventListener {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         
-        String machineName = "Tank Manager";
+        String machineName = "machineName";
         
-        RegisterFactory registerFactory = new RegisterFactoryImpl(MainActivity.this);
+        RegisterFactory registerFactory = new RegisterFactoryImpl(MainActivity.this, 5);
 
         // create Uniquid Node
         File providerWalletFile = new File(getBaseContext().getExternalFilesDir(null), "/provider.wallet");
         File userWalletFile = new File(getBaseContext().getExternalFilesDir(null), "/user.wallet");
         File chainFile = new File(getBaseContext().getExternalFilesDir(null), "/chain.spvchain");
         File userChainFile = new File(getBaseContext().getExternalFilesDir(null), "/userChain.spvchain");
-        UniquidNode uniquidNode = new UniquidNodeImpl.Builder().
-                setNetworkParameters(UniquidRegTest.get()).
-                set_providerFile(providerWalletFile).
-                set_userFile(userWalletFile).
-                set_chainFile(chainFile).
-                set_userChainFile(userChainFile).
-                setRegisterFactory(registerFactory)
-                .setNodeName(machineName)
-                .build();
+        UniquidNodeImpl.UniquidNodeBuilder uBuilder = new UniquidNodeImpl.UniquidNodeBuilder();
+        
+        DefaultUserClientFactory defaultUserClientFactory = new DefaultUserClientFactory(PreferencesUtils.getBroker(MainActivity.this), 20);
+        
+        uBuilder.setNetworkParameters(Config.getNetworkParameter()).
+            setProviderFile(providerWalletFile).
+            setUserFile(userWalletFile).
+            setProviderChainFile(chainFile).
+            setUserChainFile(userChainFile).
+            setRegisterFactory(registerFactory).
+            setRegistryUrl(PreferencesUtils.getRegistryURL(MainActivity.this)).
+            setUserClientFactory(defaultUserClientFactory).
+            setNodeName(machineName);
+            
+        UniquidNodeImpl uniquidNode = uBuilder.build();
     
         // add event listener
         uniquidNode.addUniquidNodeEventListener(MainActivity.this);
@@ -43,9 +49,6 @@ public class MainActivity extends Activity implements UniquidNodeEventListener {
                 .set_broker("broker.mqttdashboard.com:8000")
                 .set_topic(machineName)
                 .build();
-    
-        // create RegisterFactory
-        RegisterFactory factory = new RegisterFactoryImpl(MainActivity.this, 5);
         
         // create UniquidSimplifier
         UniquidSimplifier simplifier = new UniquidSimplifier(
@@ -56,7 +59,9 @@ public class MainActivity extends Activity implements UniquidNodeEventListener {
                     
         // start simplifier
         simplifier.start();
-                
+        
+        List<UserChannel> channelArrayList = simplifier.getRegisterFactory().getUserRegister().getAllUserChannels();
+        
     }
     
     @Override
@@ -86,7 +91,7 @@ public class MainActivity extends Activity implements UniquidNodeEventListener {
 
     @Override
     public void onSyncNodeEnd() {
-
+        
     }
 
     @Override
