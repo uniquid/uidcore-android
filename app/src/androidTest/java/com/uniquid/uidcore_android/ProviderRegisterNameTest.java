@@ -117,7 +117,7 @@ public class ProviderRegisterNameTest {
 
         channelsName = registerName.getAllChannels();
 
-        assertEquals(channelsName.size(), 1);
+        assertEquals(1, channelsName.size());
 
         assertEquals(true, providerChannelName.equals(channelsName.get(0)));
 

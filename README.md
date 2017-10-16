@@ -1,4 +1,4 @@
-# register-android
+# uidcore-android
 Android library for SQLite register management.
 It allows to create and manage registers containing UniquId elements.
 
