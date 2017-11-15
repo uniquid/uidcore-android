@@ -1,4 +1,4 @@
-# register-android
+# uidcore-android
 Android library for SQLite register management.
 It allows to create and manage registers containing UniquId elements.
 
@@ -16,31 +16,39 @@ public class MainActivity extends Activity implements UniquidNodeEventListener {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        
+        String machineName = "machineName";
+        
+        RegisterFactory registerFactory = new RegisterFactoryImpl(MainActivity.this, 5);
 
         // create Uniquid Node
         File providerWalletFile = new File(getBaseContext().getExternalFilesDir(null), "/provider.wallet");
         File userWalletFile = new File(getBaseContext().getExternalFilesDir(null), "/user.wallet");
         File chainFile = new File(getBaseContext().getExternalFilesDir(null), "/chain.spvchain");
         File userChainFile = new File(getBaseContext().getExternalFilesDir(null), "/userChain.spvchain");
-        UniquidNodeImpl.Builder uniquidNode = new UniquidNodeImpl.Builder().
-                set_params(UniquidRegTest.get()).
-                set_providerFile(providerWalletFile).
-                set_userFile(userWalletFile).
-                set_chainFile(chainFile).
-                set_userChainFile(userChainFile).
-                set_registerFactory(registerFactory)
-                .build();
+        UniquidNodeImpl.UniquidNodeBuilder uBuilder = new UniquidNodeImpl.UniquidNodeBuilder();
+        
+        DefaultUserClientFactory defaultUserClientFactory = new DefaultUserClientFactory(PreferencesUtils.getBroker(MainActivity.this), 20);
+        
+        uBuilder.setNetworkParameters(Config.getNetworkParameter()).
+            setProviderFile(providerWalletFile).
+            setUserFile(userWalletFile).
+            setProviderChainFile(chainFile).
+            setUserChainFile(userChainFile).
+            setRegisterFactory(registerFactory).
+            setRegistryUrl(PreferencesUtils.getRegistryURL(MainActivity.this)).
+            setUserClientFactory(defaultUserClientFactory).
+            setNodeName(machineName);
+            
+        UniquidNodeImpl uniquidNode = uBuilder.build();
     
         // add event listener
         uniquidNode.addUniquidNodeEventListener(MainActivity.this);
     
         Connector connector = new MQTTConnector.Builder()
-                .set_broker(Utils.BROKER)
+                .set_broker("broker.mqttdashboard.com:8000")
                 .set_topic(machineName)
                 .build();
-    
-        // create RegisterFactory
-        RegisterFactory factory = new RegisterFactory(MainActivity.this);
         
         // create UniquidSimplifier
         UniquidSimplifier simplifier = new UniquidSimplifier(
@@ -52,74 +60,73 @@ public class MainActivity extends Activity implements UniquidNodeEventListener {
         // start simplifier
         simplifier.start();
         
-        ...
+        List<UserChannel> channelArrayList = simplifier.getRegisterFactory().getUserRegister().getAllUserChannels();
         
-        // create UserChannel
-        UserChannel userChannel = new UserChannel(
-                "providerName", 
-                "providerAddress", 
-                "userAddress", 
-                "bitmask"
-                );
-                
-        userChannel.setRevokeAddress("revokeAddress");
-        userChannel.setRevokeTxId("revokeTxId");
+    }
+    
+    @Override
+    public void onProviderContractCreated(ProviderChannel providerChannel) {
         
-        // get UserRegister
-        UserRegister register = factory.getUserRegister();
-    
-        // store new UserChannel into register
-        register.insertChannel(userChannel);
     }
-    
+
     @Override
-    public void onProviderContractCreated(com.uniquid.register.provider.ProviderChannel providerChannel) {
-    
+    public void onProviderContractRevoked(ProviderChannel providerChannel) {
+
     }
-    
+
     @Override
-    public void onProviderContractRevoked(com.uniquid.register.provider.ProviderChannel providerChannel) {
-    
+    public void onUserContractCreated(UserChannel userChannel) {
+
     }
-    
+
     @Override
-    public void onUserContractCreated(final UserChannel userChannel) {
-   
+    public void onUserContractRevoked(UserChannel userChannel) {
+
     }
-    
-    @Override
-    public void onUserContractRevoked(final UserChannel userChannel) {
-    
-    }
-    
+
     @Override
     public void onSyncNodeStart() {
-            
+
     }
-    
+
     @Override
     public void onSyncNodeEnd() {
-            
+        
     }
-    
+
     @Override
     public void onSyncStarted(int i) {
-            
+
     }
-    
+
     @Override
     public void onSyncProgress(double v, int i, Date date) {
-            
+
     }
-    
+
     @Override
     public void onSyncEnded() {
-    
+
     }
-    
+
     @Override
     public void onNodeStateChange(UniquidNodeState uniquidNodeState) {
-    
+
+    }
+
+    @Override
+    public void onPeerConnected(Peer peer, int i) {
+
+    }
+
+    @Override
+    public void onPeerDisconnected(Peer peer, int i) {
+
+    }
+
+    @Override
+    public void onPeersDiscovered(Set<PeerAddress> set) {
+
     }
         
 }

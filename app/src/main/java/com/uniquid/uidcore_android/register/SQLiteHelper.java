@@ -52,7 +52,11 @@ public class SQLiteHelper extends SQLiteOpenHelper {
             PROVIDER_CLM_USER_ADDRESS + "));";
 
     public SQLiteHelper(Context context) {
-        super(context, DB_NAME, null, DB_VERSION);
+        this(context, DB_NAME);
+    }
+
+    public SQLiteHelper(Context context, String dbName) {
+        super(context, dbName, null, DB_VERSION);
     }
 
     @Override

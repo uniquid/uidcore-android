@@ -9,6 +9,8 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
+ * Class to manage database transactions
+ *
  * @author Beatrice Formai
  */
 
@@ -19,9 +21,29 @@ public class AndroidDataSource implements TransactionManager {
     private SQLiteHelperPool sqLiteHelperPool;
     private final Lock writerLock;
 
+    /**
+     * Create a new {@link AndroidDataSource}
+     * @param context the application {@link Context}
+     * @param sqliteOpenHelperClass the helper class for the connections
+     * @param connections number of allowed connections to the database at the same time
+     * */
     AndroidDataSource(final Context context, final Class sqliteOpenHelperClass, int connections) {
 
         this.sqLiteHelperPool = new SQLiteHelperPool(context, sqliteOpenHelperClass, connections);
+        this.writerLock = new ReentrantLock();
+
+    }
+
+    /**
+     * Create a new {@link AndroidDataSource}
+     * @param context the application {@link Context}
+     * @param sqliteOpenHelperClass the helper class for the connections
+     * @param connections number of allowed connections to the database at the same time
+     * @param dbName name of the database
+     * */
+    AndroidDataSource(final Context context, final Class sqliteOpenHelperClass, int connections, String dbName) {
+
+        this.sqLiteHelperPool = new SQLiteHelperPool(context, sqliteOpenHelperClass, connections, dbName);
         this.writerLock = new ReentrantLock();
 
     }
@@ -77,7 +99,6 @@ public class AndroidDataSource implements TransactionManager {
 
             writerLock.unlock();
 
-            // remember to remove the wrapper from the threadlocal!
             context.remove();
 
         }
@@ -108,6 +129,11 @@ public class AndroidDataSource implements TransactionManager {
 
         }
 
+    }
+
+    @Override
+    public boolean insideTransaction() {
+        return (context.get() != null);
     }
 
     public SQLiteHelperPool.SQLiteDatabaseWrapper getSQLiteDatabaseWrapper() throws Exception {
