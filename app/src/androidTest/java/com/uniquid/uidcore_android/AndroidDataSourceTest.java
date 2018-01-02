@@ -7,8 +7,6 @@ import com.uniquid.register.exception.RegisterException;
 import com.uniquid.register.transaction.TransactionManagerTest;
 import com.uniquid.uidcore_android.register.RegisterFactoryImpl;
 
-import org.junit.Test;
-
 /**
  * @author Beatrice Formai
  */
