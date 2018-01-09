@@ -16,6 +16,17 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            libraryVariants.all { variant ->
+                variant.outputs.each { output ->
+                    def outputFile = output.outputFile
+                    if (outputFile != null && outputFile.name.endsWith('.aar')) {
+                        def fileName = "uidcore-android"
+                        def version = android.defaultConfig.versionName
+                        def name = fileName + "-" + version + ".aar"
+                        output.outputFile = new File(outputFile.parent, name)
+                    }
+                }
+            }
         }
         debug {
             testCoverageEnabled true
