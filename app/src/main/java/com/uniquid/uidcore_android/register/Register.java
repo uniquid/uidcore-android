@@ -13,6 +13,9 @@ import com.uniquid.register.user.UserRegister;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.uniquid.uidcore_android.register.SQLiteHelper.TABLE_PROVIDER;
+import static com.uniquid.uidcore_android.register.SQLiteHelper.TABLE_USER;
+
 /**
  * Class implementation of {@code UserRegister} and {@code ProviderRegister} to manage {@code UserChannel} and {@code ProviderChannel} database records
  *
@@ -25,6 +28,36 @@ public class Register implements UserRegister, ProviderRegister {
 
     public Register(AndroidDataSource androidDataSource) {
         this.androidDataSource = androidDataSource;
+    }
+
+    void cleanUserTable() throws RegisterException {
+        try {
+
+            try (SQLiteHelperPool.SQLiteDatabaseWrapper sqLiteDatabaseWrapper =
+                         androidDataSource.getSQLiteDatabaseWrapper()) {
+
+                SQLiteDatabase db = sqLiteDatabaseWrapper.getSQLiteDatabase();
+
+                db.delete(TABLE_USER, "1", null);
+            }
+        } catch (Throwable t) {
+            throw new RegisterException("Exception", t);
+        }
+    }
+
+    void cleanProviderTable() throws RegisterException {
+        try {
+
+            try (SQLiteHelperPool.SQLiteDatabaseWrapper sqLiteDatabaseWrapper =
+                         androidDataSource.getSQLiteDatabaseWrapper()) {
+
+                SQLiteDatabase db = sqLiteDatabaseWrapper.getSQLiteDatabase();
+
+                db.delete(TABLE_PROVIDER, "1", null);
+            }
+        } catch (Throwable t) {
+            throw new RegisterException("Exception", t);
+        }
     }
 
     /**
@@ -43,7 +76,7 @@ public class Register implements UserRegister, ProviderRegister {
                 SQLiteDatabase db = sqLiteDatabaseWrapper.getSQLiteDatabase();
 
                 List<UserChannel> channels = new ArrayList<>();
-                Cursor cursor = db.rawQuery("select * from " + SQLiteHelper.TABLE_USER, null);
+                Cursor cursor = db.rawQuery("select * from " + TABLE_USER, null);
                 if (cursor.moveToFirst()) {
                     do {
                         channels.add(createUserChannelFromCursor(cursor));
@@ -74,9 +107,11 @@ public class Register implements UserRegister, ProviderRegister {
 
                 SQLiteDatabase db = sqLiteDatabaseWrapper.getSQLiteDatabase();
 
+                String query = "select * from " + TABLE_USER +
+                        " where " + SQLiteHelper.USER_CLM_PROVIDER_NAME + " = ?";
+
                 try (Cursor cursor = db.rawQuery(
-                        "select * from " + SQLiteHelper.TABLE_USER +
-                                " where " + SQLiteHelper.USER_CLM_PROVIDER_NAME + " = ?",
+                        query,
                         new String[]{providerName})) {
                     if (cursor.moveToFirst()) {
                         return createUserChannelFromCursor(cursor);
@@ -108,9 +143,10 @@ public class Register implements UserRegister, ProviderRegister {
 
                 SQLiteDatabase db = sqLiteDatabaseWrapper.getSQLiteDatabase();
 
+                String query = "select * from " + TABLE_USER +
+                        " where " + SQLiteHelper.USER_CLM_PROVIDER_ADDRESS + " = ?";
                 try(Cursor cursor = db.rawQuery(
-                        "select * from " + SQLiteHelper.TABLE_USER +
-                                " where " + SQLiteHelper.USER_CLM_PROVIDER_ADDRESS + " = ?",
+                        query,
                         new String[]{address})) {
                     if (cursor.moveToFirst()) {
                         return createUserChannelFromCursor(cursor);
@@ -143,9 +179,10 @@ public class Register implements UserRegister, ProviderRegister {
             try (SQLiteHelperPool.SQLiteDatabaseWrapper sqLiteDatabaseWrapper =
                          androidDataSource.getSQLiteDatabaseWrapper()) {
                 SQLiteDatabase db = sqLiteDatabaseWrapper.getSQLiteDatabase();
+                String query = "select * from " + TABLE_USER +
+                        " where " + SQLiteHelper.USER_CLM_REVOKE_TX_ID + " = ?";
                 try (Cursor cursor = db.rawQuery(
-                        "select * from " + SQLiteHelper.TABLE_USER +
-                                " where " + SQLiteHelper.USER_CLM_REVOKE_TX_ID + " = ?",
+                        query,
                         new String[]{revokeTxId})) {
                     if (cursor.moveToFirst()) {
                         return createUserChannelFromCursor(cursor);
@@ -174,9 +211,10 @@ public class Register implements UserRegister, ProviderRegister {
         try {
             try (SQLiteHelperPool.SQLiteDatabaseWrapper sqLiteDatabaseWrapper = androidDataSource.getSQLiteDatabaseWrapper()) {
                 SQLiteDatabase db = sqLiteDatabaseWrapper.getSQLiteDatabase();
+                String query = "select * from " + TABLE_USER + " where " +
+                        SQLiteHelper.USER_CLM_REVOKE_ADDRESS + " = ?";
                 try(Cursor cursor = db.rawQuery(
-                        "select * from " + SQLiteHelper.TABLE_USER + " where " +
-                                SQLiteHelper.USER_CLM_REVOKE_ADDRESS + " = ?",
+                        query,
                         new String[]{revokeAddress})) {
                     if (cursor.moveToFirst()) {
                         return createUserChannelFromCursor(cursor);
@@ -212,7 +250,7 @@ public class Register implements UserRegister, ProviderRegister {
                 values.put(SQLiteHelper.USER_CLM_BITMASK, userChannel.getBitmask());
                 values.put(SQLiteHelper.USER_CLM_REVOKE_ADDRESS, userChannel.getRevokeAddress());
                 values.put(SQLiteHelper.USER_CLM_REVOKE_TX_ID, userChannel.getRevokeTxId());
-                long db_index = db.insert(SQLiteHelper.TABLE_USER, null, values);
+                long db_index = db.insert(TABLE_USER, null, values);
                 if (db_index < 0)
                     throw new RegisterException("Error inserting new channel");
             }
@@ -239,7 +277,7 @@ public class Register implements UserRegister, ProviderRegister {
 
                 SQLiteDatabase db = sqLiteDatabaseWrapper.getSQLiteDatabase();
 
-                int d = db.delete(SQLiteHelper.TABLE_USER, SQLiteHelper.USER_CLM_PROVIDER_NAME + " = ? AND " +
+                int d = db.delete(TABLE_USER, SQLiteHelper.USER_CLM_PROVIDER_NAME + " = ? AND " +
                                 SQLiteHelper.USER_CLM_PROVIDER_ADDRESS + " = ? AND " + SQLiteHelper.USER_CLM_USER_ADDRESS + " = ?",
                         new String[]{userChannel.getProviderName(), userChannel.getProviderAddress(), userChannel.getUserAddress()});
                 if (d == 0)
@@ -302,8 +340,9 @@ public class Register implements UserRegister, ProviderRegister {
             try (SQLiteHelperPool.SQLiteDatabaseWrapper sqLiteDatabaseWrapper =
                          androidDataSource.getSQLiteDatabaseWrapper()) {
                 SQLiteDatabase db = sqLiteDatabaseWrapper.getSQLiteDatabase();
-                try(Cursor cursor = db.rawQuery("select * from " + SQLiteHelper.TABLE_PROVIDER +
-                                " where " + SQLiteHelper.PROVIDER_CLM_USER_ADDRESS + " = ?",
+                String query = "select * from " + SQLiteHelper.TABLE_PROVIDER +
+                        " where " + SQLiteHelper.PROVIDER_CLM_USER_ADDRESS + " = ?";
+                try(Cursor cursor = db.rawQuery(query,
                         new String[]{userAddress})) {
                     if (cursor.moveToFirst()) {
                         return createProviderChannelFromCursor(cursor);
@@ -333,8 +372,10 @@ public class Register implements UserRegister, ProviderRegister {
             try (SQLiteHelperPool.SQLiteDatabaseWrapper sqLiteDatabaseWrapper =
                          androidDataSource.getSQLiteDatabaseWrapper()) {
                 SQLiteDatabase db = sqLiteDatabaseWrapper.getSQLiteDatabase();
-                try(Cursor cursor = db.rawQuery("select * from " + SQLiteHelper.TABLE_PROVIDER +
-                                " where " + SQLiteHelper.PROVIDER_CLM_REVOKE_ADDRESS + " = ?",
+                String query = "select * from " + SQLiteHelper.TABLE_PROVIDER +
+                        " where " + SQLiteHelper.PROVIDER_CLM_REVOKE_ADDRESS + " = ?";
+
+                try(Cursor cursor = db.rawQuery(query,
                         new String[]{revokeAddress})) {
                     if (cursor.moveToFirst()) {
                         return createProviderChannelFromCursor(cursor);
@@ -365,8 +406,9 @@ public class Register implements UserRegister, ProviderRegister {
                          androidDataSource.getSQLiteDatabaseWrapper()) {
 
                 SQLiteDatabase db = sqLiteDatabaseWrapper.getSQLiteDatabase();
-                try (Cursor cursor = db.rawQuery("select * from " + SQLiteHelper.TABLE_PROVIDER +
-                                " where " + SQLiteHelper.PROVIDER_CLM_REVOKE_TX_ID + " = ?",
+                String query = "select * from " + SQLiteHelper.TABLE_PROVIDER +
+                        " where " + SQLiteHelper.PROVIDER_CLM_REVOKE_TX_ID + " = ?";
+                try (Cursor cursor = db.rawQuery(query,
                         new String[]{revokeTxId})){
                     if (cursor.moveToFirst()) {
                         return createProviderChannelFromCursor(cursor);

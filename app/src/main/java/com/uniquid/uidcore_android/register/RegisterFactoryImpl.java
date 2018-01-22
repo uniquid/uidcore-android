@@ -1,12 +1,16 @@
 package com.uniquid.uidcore_android.register;
 
 import android.content.Context;
+import android.database.sqlite.SQLiteDatabase;
 
 import com.uniquid.register.RegisterFactory;
 import com.uniquid.register.exception.RegisterException;
 import com.uniquid.register.provider.ProviderRegister;
 import com.uniquid.register.transaction.TransactionManager;
 import com.uniquid.register.user.UserRegister;
+
+import static com.uniquid.uidcore_android.register.SQLiteHelper.TABLE_PROVIDER;
+import static com.uniquid.uidcore_android.register.SQLiteHelper.TABLE_USER;
 
 /**
  * Concrete class implementation of {@code RegisterFactory} that uses SQLite as data store.
@@ -43,6 +47,12 @@ public class RegisterFactoryImpl implements RegisterFactory {
 
         // Tell android dataSource what implementation to use
         androidDataSource = new AndroidDataSource(context, sqliteOpenHelperClass, connections, dbName);
+    }
+
+    public void cleanTables() throws RegisterException {
+        Register register = new Register(androidDataSource);
+        register.cleanUserTable();
+        register.cleanProviderTable();
     }
 
     /**

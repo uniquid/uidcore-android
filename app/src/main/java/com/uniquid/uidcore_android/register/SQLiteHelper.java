@@ -78,4 +78,8 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         // create new table
         onCreate(db);
     }
+
+    public void cleanTables() {
+
+    }
 }

@@ -10,7 +10,6 @@ android {
         versionCode 1
         versionName "0.1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
-        multiDexEnabled true
     }
     buildTypes {
         release {
@@ -21,19 +20,14 @@ android {
             testCoverageEnabled true
         }
         libraryVariants.all { variant ->
-            variant.outputs.each { output ->
-                def outputFile = output.outputFile
-                if (outputFile != null && outputFile.name.endsWith('.aar')) {
-                    def fileName = "uidcore-android"
-                    def version = android.defaultConfig.versionName
-                    def name
-                    if(buildType.name == "debug") {
-                        name = fileName + "-" + version + "-debug.aar"
-                    } else {
-                        name = fileName + "-" + version + ".aar"
-                    }
-                    output.outputFile = new File(outputFile.parent, name)
+            variant.outputs.all { output ->
+
+                if(buildType.name == "debug") {
+                    outputFileName = "uidcore-android-${android.defaultConfig.versionName}-debug.aar"
+                } else {
+                    outputFileName = "uidcore-android-${android.defaultConfig.versionName}.aar"
                 }
+
             }
         }
     }
@@ -44,7 +38,7 @@ dependencies {
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
-    compile 'com.android.support:appcompat-v7:25.3.1'
+    compile 'com.android.support:appcompat-v7:25.4.0'
     testCompile 'junit:junit:4.12'
     compile 'org.slf4j:slf4j-android:1.7.25'
     androidTestCompile files('register-spi-0.1-RC1-SNAPSHOT-tests.jar')
