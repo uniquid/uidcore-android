@@ -79,7 +79,4 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         onCreate(db);
     }
 
-    public void cleanTables() {
-
-    }
 }

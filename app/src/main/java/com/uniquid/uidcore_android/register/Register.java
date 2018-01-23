@@ -30,31 +30,35 @@ public class Register implements UserRegister, ProviderRegister {
         this.androidDataSource = androidDataSource;
     }
 
+    /**
+     * Delete all rows from {@code UserChannel} table
+     * @throws RegisterException in case an error occurs
+     * */
     void cleanUserTable() throws RegisterException {
-        try {
 
-            try (SQLiteHelperPool.SQLiteDatabaseWrapper sqLiteDatabaseWrapper =
-                         androidDataSource.getSQLiteDatabaseWrapper()) {
+        try (SQLiteHelperPool.SQLiteDatabaseWrapper sqLiteDatabaseWrapper =
+                     androidDataSource.getSQLiteDatabaseWrapper()) {
 
-                SQLiteDatabase db = sqLiteDatabaseWrapper.getSQLiteDatabase();
+            SQLiteDatabase db = sqLiteDatabaseWrapper.getSQLiteDatabase();
 
-                db.delete(TABLE_USER, "1", null);
-            }
+            db.delete(TABLE_USER, "1", null);
         } catch (Throwable t) {
             throw new RegisterException("Exception", t);
         }
     }
 
+    /**
+     * Delete all rows from {@code ProviderChannel} table
+     * @throws RegisterException in case an error occurs
+     * */
     void cleanProviderTable() throws RegisterException {
-        try {
 
-            try (SQLiteHelperPool.SQLiteDatabaseWrapper sqLiteDatabaseWrapper =
-                         androidDataSource.getSQLiteDatabaseWrapper()) {
+        try (SQLiteHelperPool.SQLiteDatabaseWrapper sqLiteDatabaseWrapper =
+                     androidDataSource.getSQLiteDatabaseWrapper()) {
 
-                SQLiteDatabase db = sqLiteDatabaseWrapper.getSQLiteDatabase();
+            SQLiteDatabase db = sqLiteDatabaseWrapper.getSQLiteDatabase();
 
-                db.delete(TABLE_PROVIDER, "1", null);
-            }
+            db.delete(TABLE_PROVIDER, "1", null);
         } catch (Throwable t) {
             throw new RegisterException("Exception", t);
         }
