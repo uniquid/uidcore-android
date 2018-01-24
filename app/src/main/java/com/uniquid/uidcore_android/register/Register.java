@@ -10,6 +10,9 @@ import com.uniquid.register.provider.ProviderRegister;
 import com.uniquid.register.user.UserChannel;
 import com.uniquid.register.user.UserRegister;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,6 +27,9 @@ import static com.uniquid.uidcore_android.register.SQLiteHelper.TABLE_USER;
 
 public class Register implements UserRegister, ProviderRegister {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(Register.class);
+
+
     protected AndroidDataSource androidDataSource;
 
     public Register(AndroidDataSource androidDataSource) {
@@ -36,6 +42,8 @@ public class Register implements UserRegister, ProviderRegister {
      * */
     void cleanUserTable() throws RegisterException {
 
+        LOGGER.debug("Cleaning table USER...");
+
         try (SQLiteHelperPool.SQLiteDatabaseWrapper sqLiteDatabaseWrapper =
                      androidDataSource.getSQLiteDatabaseWrapper()) {
 
@@ -43,6 +51,7 @@ public class Register implements UserRegister, ProviderRegister {
 
             db.delete(TABLE_USER, "1", null);
         } catch (Throwable t) {
+            LOGGER.error("Exception while cleaning table USER", t);
             throw new RegisterException("Exception", t);
         }
     }
@@ -53,6 +62,8 @@ public class Register implements UserRegister, ProviderRegister {
      * */
     void cleanProviderTable() throws RegisterException {
 
+        LOGGER.debug("Cleaning table PROVIDER...");
+
         try (SQLiteHelperPool.SQLiteDatabaseWrapper sqLiteDatabaseWrapper =
                      androidDataSource.getSQLiteDatabaseWrapper()) {
 
@@ -60,6 +71,7 @@ public class Register implements UserRegister, ProviderRegister {
 
             db.delete(TABLE_PROVIDER, "1", null);
         } catch (Throwable t) {
+            LOGGER.error("Exception while cleaning table PROVIDER", t);
             throw new RegisterException("Exception", t);
         }
     }
