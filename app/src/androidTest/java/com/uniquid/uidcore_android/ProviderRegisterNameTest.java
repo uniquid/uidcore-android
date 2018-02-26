@@ -98,6 +98,8 @@ public class ProviderRegisterNameTest {
         providerChannelName.setRevokeAddress("revokerAddress");
         providerChannelName.setRevokeTxId("revokeTxid");
         providerChannelName.setBitmask("11111");
+        providerChannelName.setSince(0);
+        providerChannelName.setUntil(0);
 
         try {
             registerName.insertChannel(null);

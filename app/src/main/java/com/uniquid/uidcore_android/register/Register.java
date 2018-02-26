@@ -326,7 +326,9 @@ public class Register implements UserRegister, ProviderRegister {
                 SQLiteDatabase db = sqLiteDatabaseWrapper.getSQLiteDatabase();
                 List<ProviderChannel> channels = new ArrayList<>();
 
-                try(Cursor cursor = db.rawQuery("select * from " + SQLiteHelper.TABLE_PROVIDER, null)) {
+                String query = "select * from " + SQLiteHelper.TABLE_PROVIDER + " order by " + SQLiteHelper.PROVIDER_CLM_CREATION_TIME + " desc";
+                try(Cursor cursor = db.rawQuery(query,
+						null)) {
                     if (cursor.moveToFirst()) {
                         do {
                             channels.add(createProviderChannelFromCursor(cursor));
@@ -461,6 +463,9 @@ public class Register implements UserRegister, ProviderRegister {
                 values.put(SQLiteHelper.PROVIDER_CLM_REVOKE_ADDRESS, providerChannel.getRevokeAddress());
                 values.put(SQLiteHelper.PROVIDER_CLM_REVOKE_TX_ID, providerChannel.getRevokeTxId());
                 values.put(SQLiteHelper.PROVIDER_CLM_CREATION_TIME, providerChannel.getCreationTime());
+                values.put(SQLiteHelper.PROVIDER_CLM_SINCE, providerChannel.getSince());
+                values.put(SQLiteHelper.PROVIDER_CLM_UNTIL, providerChannel.getUntil());
+
                 long db_index = db.insert(SQLiteHelper.TABLE_PROVIDER, null, values);
                 if (db_index < 0)
                     throw new RegisterException("Exception while insertChannel()");
@@ -516,6 +521,8 @@ public class Register implements UserRegister, ProviderRegister {
         providerChannel.setRevokeAddress(cursor.getString(3));
         providerChannel.setRevokeTxId(cursor.getString(4));
         providerChannel.setCreationTime(cursor.getInt(5));
+        providerChannel.setSince(cursor.getInt(6));
+        providerChannel.setUntil(cursor.getInt(7));
         return providerChannel;
     }
 }

@@ -41,13 +41,17 @@ public class SQLiteHelper extends SQLiteOpenHelper {
     static final String PROVIDER_CLM_REVOKE_ADDRESS = "revoke_address";
     static final String PROVIDER_CLM_REVOKE_TX_ID = "revoke_tx_id";
     static final String PROVIDER_CLM_CREATION_TIME = "creation_time";
+    static final String PROVIDER_CLM_SINCE = "since";
+    static final String PROVIDER_CLM_UNTIL = "until";
     private static final String PROVIDER_CREATE = "create table " + TABLE_PROVIDER + "(" +
             PROVIDER_CLM_PROVIDER_ADDRESS + " text not null, " +
             PROVIDER_CLM_USER_ADDRESS + " text not null, " +
             PROVIDER_CLM_BITMASK + " text not null, " +
             PROVIDER_CLM_REVOKE_ADDRESS + " text not null, " +
             PROVIDER_CLM_REVOKE_TX_ID + " text not null, " +
-            PROVIDER_CLM_CREATION_TIME + " integer not null, primary key (" +
+            PROVIDER_CLM_CREATION_TIME + " integer not null, " +
+            PROVIDER_CLM_SINCE + " integer, " +
+            PROVIDER_CLM_UNTIL + " integer, primary key (" +
             PROVIDER_CLM_PROVIDER_ADDRESS + ", " +
             PROVIDER_CLM_USER_ADDRESS + "));";
 
