@@ -1,7 +1,6 @@
 package com.uniquid.uidcore_android;
 
 import android.support.test.InstrumentationRegistry;
-import android.support.test.filters.LargeTest;
 
 import com.uniquid.register.exception.RegisterException;
 import com.uniquid.register.provider.ProviderChannel;
