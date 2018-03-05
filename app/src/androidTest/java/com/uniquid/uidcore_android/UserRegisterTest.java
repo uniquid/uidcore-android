@@ -55,6 +55,7 @@ public class UserRegisterTest extends com.uniquid.register.user.UserRegisterTest
         userChannel.setBitmask("11111");
         userChannel.setRevokeAddress("revokeAddress");
         userChannel.setRevokeTxId("revokeTxId");
+        userChannel.setPath("path");
 
         userRegister.insertChannel(userChannel);
 

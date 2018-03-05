@@ -16,6 +16,14 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.uniquid.uidcore_android.register.SQLiteHelper.PROVIDER_CLM_BITMASK;
+import static com.uniquid.uidcore_android.register.SQLiteHelper.PROVIDER_CLM_CREATION_TIME;
+import static com.uniquid.uidcore_android.register.SQLiteHelper.PROVIDER_CLM_PATH;
+import static com.uniquid.uidcore_android.register.SQLiteHelper.PROVIDER_CLM_REVOKE_ADDRESS;
+import static com.uniquid.uidcore_android.register.SQLiteHelper.PROVIDER_CLM_REVOKE_TX_ID;
+import static com.uniquid.uidcore_android.register.SQLiteHelper.PROVIDER_CLM_SINCE;
+import static com.uniquid.uidcore_android.register.SQLiteHelper.PROVIDER_CLM_UNTIL;
+import static com.uniquid.uidcore_android.register.SQLiteHelper.PROVIDER_CLM_USER_ADDRESS;
 import static com.uniquid.uidcore_android.register.SQLiteHelper.TABLE_PROVIDER;
 import static com.uniquid.uidcore_android.register.SQLiteHelper.TABLE_USER;
 
@@ -266,6 +274,7 @@ public class Register implements UserRegister, ProviderRegister {
                 values.put(SQLiteHelper.USER_CLM_BITMASK, userChannel.getBitmask());
                 values.put(SQLiteHelper.USER_CLM_REVOKE_ADDRESS, userChannel.getRevokeAddress());
                 values.put(SQLiteHelper.USER_CLM_REVOKE_TX_ID, userChannel.getRevokeTxId());
+                values.put(SQLiteHelper.USER_CLM_PATH, userChannel.getPath());
                 long db_index = db.insert(TABLE_USER, null, values);
                 if (db_index < 0)
                     throw new RegisterException("Error inserting new channel");
@@ -465,6 +474,7 @@ public class Register implements UserRegister, ProviderRegister {
                 values.put(SQLiteHelper.PROVIDER_CLM_CREATION_TIME, providerChannel.getCreationTime());
                 values.put(SQLiteHelper.PROVIDER_CLM_SINCE, providerChannel.getSince());
                 values.put(SQLiteHelper.PROVIDER_CLM_UNTIL, providerChannel.getUntil());
+                values.put(SQLiteHelper.PROVIDER_CLM_PATH, providerChannel.getPath());
 
                 long db_index = db.insert(SQLiteHelper.TABLE_PROVIDER, null, values);
                 if (db_index < 0)
@@ -510,19 +520,21 @@ public class Register implements UserRegister, ProviderRegister {
         userChannel.setBitmask(cursor.getString(cursor.getColumnIndex(SQLiteHelper.USER_CLM_BITMASK)));
         userChannel.setRevokeAddress(cursor.getString(cursor.getColumnIndex(SQLiteHelper.USER_CLM_REVOKE_ADDRESS)));
         userChannel.setRevokeTxId(cursor.getString(cursor.getColumnIndex(SQLiteHelper.USER_CLM_REVOKE_TX_ID)));
+        userChannel.setPath(cursor.getString(cursor.getColumnIndex(SQLiteHelper.USER_CLM_PATH)));
         return userChannel;
     }
 
     private ProviderChannel createProviderChannelFromCursor(Cursor cursor) {
         ProviderChannel providerChannel = new ProviderChannel();
-        providerChannel.setProviderAddress(cursor.getString(0));
-        providerChannel.setUserAddress(cursor.getString(1));
-        providerChannel.setBitmask(cursor.getString(2));
-        providerChannel.setRevokeAddress(cursor.getString(3));
-        providerChannel.setRevokeTxId(cursor.getString(4));
-        providerChannel.setCreationTime(cursor.getInt(5));
-        providerChannel.setSince(cursor.getInt(6));
-        providerChannel.setUntil(cursor.getInt(7));
+        providerChannel.setProviderAddress(cursor.getString(cursor.getColumnIndex(SQLiteHelper.PROVIDER_CLM_PROVIDER_ADDRESS)));
+        providerChannel.setUserAddress(cursor.getString(cursor.getColumnIndex(PROVIDER_CLM_USER_ADDRESS)));
+        providerChannel.setBitmask(cursor.getString(cursor.getColumnIndex(PROVIDER_CLM_BITMASK)));
+        providerChannel.setRevokeAddress(cursor.getString(cursor.getColumnIndex(PROVIDER_CLM_REVOKE_ADDRESS)));
+        providerChannel.setRevokeTxId(cursor.getString(cursor.getColumnIndex(PROVIDER_CLM_REVOKE_TX_ID)));
+        providerChannel.setCreationTime(cursor.getInt(cursor.getColumnIndex(PROVIDER_CLM_CREATION_TIME)));
+        providerChannel.setSince(cursor.getInt(cursor.getColumnIndex(PROVIDER_CLM_SINCE)));
+        providerChannel.setUntil(cursor.getInt(cursor.getColumnIndex(PROVIDER_CLM_UNTIL)));
+        providerChannel.setPath(cursor.getString(cursor.getColumnIndex(PROVIDER_CLM_PATH)));
         return providerChannel;
     }
 }

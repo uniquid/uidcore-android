@@ -22,13 +22,15 @@ public class SQLiteHelper extends SQLiteOpenHelper {
     static final String USER_CLM_BITMASK = "bitmask";
     static final String USER_CLM_REVOKE_ADDRESS = "revoke_address";
     static final String USER_CLM_REVOKE_TX_ID = "revoke_tx_id";
+    static final String USER_CLM_PATH = "path";
     private static final String USER_CREATE = "create table " + TABLE_USER + "(" +
             USER_CLM_PROVIDER_NAME + " text not null, " +
             USER_CLM_PROVIDER_ADDRESS + " text not null, " +
             USER_CLM_USER_ADDRESS + " text not null, " +
             USER_CLM_BITMASK + " text not null, " +
             USER_CLM_REVOKE_ADDRESS + " text not null, " +
-            USER_CLM_REVOKE_TX_ID + " text not null, primary key (" +
+            USER_CLM_REVOKE_TX_ID + " text not null, " +
+			USER_CLM_PATH + " text not null, primary key (" +
             USER_CLM_PROVIDER_NAME + ", " +
             USER_CLM_PROVIDER_ADDRESS + ", " +
             USER_CLM_USER_ADDRESS + "));";
@@ -43,6 +45,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
     static final String PROVIDER_CLM_CREATION_TIME = "creation_time";
     static final String PROVIDER_CLM_SINCE = "since";
     static final String PROVIDER_CLM_UNTIL = "until";
+    static final String PROVIDER_CLM_PATH = "path";
     private static final String PROVIDER_CREATE = "create table " + TABLE_PROVIDER + "(" +
             PROVIDER_CLM_PROVIDER_ADDRESS + " text not null, " +
             PROVIDER_CLM_USER_ADDRESS + " text not null, " +
@@ -51,7 +54,8 @@ public class SQLiteHelper extends SQLiteOpenHelper {
             PROVIDER_CLM_REVOKE_TX_ID + " text not null, " +
             PROVIDER_CLM_CREATION_TIME + " integer not null, " +
             PROVIDER_CLM_SINCE + " integer, " +
-            PROVIDER_CLM_UNTIL + " integer, primary key (" +
+            PROVIDER_CLM_UNTIL + " integer, " +
+            PROVIDER_CLM_PATH + " text not null, primary key (" +
             PROVIDER_CLM_PROVIDER_ADDRESS + ", " +
             PROVIDER_CLM_USER_ADDRESS + "));";
 
