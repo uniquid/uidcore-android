@@ -1,3 +1,22 @@
+plugins {
+    id "org.sonarqube" version "2.6.2"
+}
+
+sonarqube {
+    properties {
+        property "sonar.projectName", "uidcore-android"
+        property "sonar.projectVersion", "${android.defaultConfig.versionName}"
+        property "sonar.projectKey", "SQKey"
+        property "sonar.sources","src/main/java"
+        property "sonar.language","java"
+        property "sonar.sourceEncoding", "UTF-8"
+        property "sonar.host.url", "http://localhost:9000/"
+        property "sonar.java.coveragePlugin", "jacoco"
+        property "sonar.tests", "src/androidTest/java"
+        property "sonar.jacoco.reportPaths", fileTree(dir: project.projectDir, includes: ['**/*.ec'])
+    }
+}
+
 apply plugin: 'com.android.library'
 apply from: './jacoco.gradle'
 
@@ -43,3 +62,4 @@ dependencies {
     implementation 'org.slf4j:slf4j-android:1.7.25'
 
 }
+

@@ -55,7 +55,7 @@ public class SQLiteHelperPool {
             }
 
             // wait until there is an available connection
-            while (pool.size() == 0) {
+            while (pool.isEmpty()) {
                 pool.wait();
             }
 
@@ -81,11 +81,9 @@ public class SQLiteHelperPool {
 
     public class SQLiteDatabaseWrapper implements AutoCloseable {
 
-        private SQLiteOpenHelper wrappedSqLiteOpenHelper;
         private SQLiteDatabase wrappedSqLiteDatabase;
 
         public SQLiteDatabaseWrapper(SQLiteOpenHelper sqLiteOpenHelper) {
-            this.wrappedSqLiteOpenHelper = sqLiteOpenHelper;
             this.wrappedSqLiteDatabase = sqLiteOpenHelper.getWritableDatabase();
         }
 

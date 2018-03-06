@@ -28,7 +28,9 @@ import static com.uniquid.uidcore_android.register.SQLiteHelper.TABLE_USER;
 public class Register implements UserRegister, ProviderRegister {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Register.class);
+	private static final String EXCEPTION = "Exception";
 
+	private static final String SELECT_QUERY = "select * from ";
 
     protected AndroidDataSource androidDataSource;
 
@@ -50,9 +52,9 @@ public class Register implements UserRegister, ProviderRegister {
             SQLiteDatabase db = sqLiteDatabaseWrapper.getSQLiteDatabase();
 
             db.delete(TABLE_USER, "1", null);
-        } catch (Throwable t) {
-            LOGGER.error("Exception while cleaning table USER", t);
-            throw new RegisterException("Exception", t);
+        } catch (Exception e) {
+            LOGGER.error("Exception while cleaning table USER", e);
+            throw new RegisterException(EXCEPTION, e);
         }
     }
 
@@ -70,9 +72,9 @@ public class Register implements UserRegister, ProviderRegister {
             SQLiteDatabase db = sqLiteDatabaseWrapper.getSQLiteDatabase();
 
             db.delete(TABLE_PROVIDER, "1", null);
-        } catch (Throwable t) {
-            LOGGER.error("Exception while cleaning table PROVIDER", t);
-            throw new RegisterException("Exception", t);
+        } catch (Exception e) {
+            LOGGER.error("Exception while cleaning table PROVIDER", e);
+            throw new RegisterException(EXCEPTION, e);
         }
     }
 
@@ -92,17 +94,17 @@ public class Register implements UserRegister, ProviderRegister {
                 SQLiteDatabase db = sqLiteDatabaseWrapper.getSQLiteDatabase();
 
                 List<UserChannel> channels = new ArrayList<>();
-                Cursor cursor = db.rawQuery("select * from " + TABLE_USER, null);
-                if (cursor.moveToFirst()) {
-                    do {
-                        channels.add(createUserChannelFromCursor(cursor));
-                    } while (cursor.moveToNext());
-                }
-                cursor.close();
+                try(Cursor cursor = db.rawQuery(SELECT_QUERY + TABLE_USER, null)){
+					if (cursor.moveToFirst()) {
+						do {
+							channels.add(createUserChannelFromCursor(cursor));
+						} while (cursor.moveToNext());
+					}
+				}
                 return channels;
             }
-        } catch (Throwable t) {
-            throw new RegisterException("Exception", t);
+        } catch (Exception e) {
+            throw new RegisterException(EXCEPTION, e);
         }
     }
 
@@ -123,7 +125,7 @@ public class Register implements UserRegister, ProviderRegister {
 
                 SQLiteDatabase db = sqLiteDatabaseWrapper.getSQLiteDatabase();
 
-                String query = "select * from " + TABLE_USER +
+                String query = SELECT_QUERY + TABLE_USER +
                         " where " + SQLiteHelper.USER_CLM_PROVIDER_NAME + " = ?";
 
                 try (Cursor cursor = db.rawQuery(
@@ -136,8 +138,8 @@ public class Register implements UserRegister, ProviderRegister {
                     }
                 }
             }
-        } catch (Throwable t) {
-            throw new RegisterException("Exception", t);
+        } catch (Exception e) {
+            throw new RegisterException(EXCEPTION, e);
         }
     }
 
@@ -159,7 +161,7 @@ public class Register implements UserRegister, ProviderRegister {
 
                 SQLiteDatabase db = sqLiteDatabaseWrapper.getSQLiteDatabase();
 
-                String query = "select * from " + TABLE_USER +
+                String query = SELECT_QUERY + TABLE_USER +
                         " where " + SQLiteHelper.USER_CLM_PROVIDER_ADDRESS + " = ?";
                 try(Cursor cursor = db.rawQuery(
                         query,
@@ -172,9 +174,9 @@ public class Register implements UserRegister, ProviderRegister {
                 }
             }
 
-        } catch (Throwable t) {
+        } catch (Exception e) {
 
-            throw new RegisterException("Exception", t);
+            throw new RegisterException(EXCEPTION, e);
 
         }
     }
@@ -195,7 +197,7 @@ public class Register implements UserRegister, ProviderRegister {
             try (SQLiteHelperPool.SQLiteDatabaseWrapper sqLiteDatabaseWrapper =
                          androidDataSource.getSQLiteDatabaseWrapper()) {
                 SQLiteDatabase db = sqLiteDatabaseWrapper.getSQLiteDatabase();
-                String query = "select * from " + TABLE_USER +
+                String query = SELECT_QUERY + TABLE_USER +
                         " where " + SQLiteHelper.USER_CLM_REVOKE_TX_ID + " = ?";
                 try (Cursor cursor = db.rawQuery(
                         query,
@@ -207,8 +209,8 @@ public class Register implements UserRegister, ProviderRegister {
                     }
                 }
             }
-        } catch (Throwable t) {
-            throw new RegisterException("Exception", t);
+        } catch (Exception e) {
+            throw new RegisterException(EXCEPTION, e);
         }
     }
 
@@ -227,7 +229,7 @@ public class Register implements UserRegister, ProviderRegister {
         try {
             try (SQLiteHelperPool.SQLiteDatabaseWrapper sqLiteDatabaseWrapper = androidDataSource.getSQLiteDatabaseWrapper()) {
                 SQLiteDatabase db = sqLiteDatabaseWrapper.getSQLiteDatabase();
-                String query = "select * from " + TABLE_USER + " where " +
+                String query = SELECT_QUERY + TABLE_USER + " where " +
                         SQLiteHelper.USER_CLM_REVOKE_ADDRESS + " = ?";
                 try(Cursor cursor = db.rawQuery(
                         query,
@@ -239,8 +241,8 @@ public class Register implements UserRegister, ProviderRegister {
                     }
                 }
             }
-        } catch (Throwable t) {
-            throw new RegisterException("Exception", t);
+        } catch (Exception e) {
+            throw new RegisterException(EXCEPTION, e);
         }
     }
 
@@ -266,13 +268,13 @@ public class Register implements UserRegister, ProviderRegister {
                 values.put(SQLiteHelper.USER_CLM_BITMASK, userChannel.getBitmask());
                 values.put(SQLiteHelper.USER_CLM_REVOKE_ADDRESS, userChannel.getRevokeAddress());
                 values.put(SQLiteHelper.USER_CLM_REVOKE_TX_ID, userChannel.getRevokeTxId());
-                long db_index = db.insert(TABLE_USER, null, values);
-                if (db_index < 0)
+                long dbIndex = db.insert(TABLE_USER, null, values);
+                if (dbIndex < 0)
                     throw new RegisterException("Error inserting new channel");
             }
 
-        } catch (Throwable t) {
-            throw new RegisterException("Exception", t);
+        } catch (Exception e) {
+            throw new RegisterException(EXCEPTION, e);
         }
     }
 
@@ -300,9 +302,9 @@ public class Register implements UserRegister, ProviderRegister {
                     throw new RegisterException("Channel not present");
             }
 
-        } catch (Throwable t) {
+        } catch (Exception e) {
 
-            throw new RegisterException("Exception", t);
+            throw new RegisterException(EXCEPTION, e);
 
         }
     }
@@ -326,18 +328,17 @@ public class Register implements UserRegister, ProviderRegister {
                 SQLiteDatabase db = sqLiteDatabaseWrapper.getSQLiteDatabase();
                 List<ProviderChannel> channels = new ArrayList<>();
 
-                try(Cursor cursor = db.rawQuery("select * from " + SQLiteHelper.TABLE_PROVIDER, null)) {
+                try(Cursor cursor = db.rawQuery(SELECT_QUERY + SQLiteHelper.TABLE_PROVIDER, null)) {
                     if (cursor.moveToFirst()) {
                         do {
                             channels.add(createProviderChannelFromCursor(cursor));
                         } while (cursor.moveToNext());
                     }
-                    cursor.close();
                 }
                 return channels;
             }
-        } catch (Throwable t) {
-            throw new RegisterException("Exception", t);
+        } catch (Exception e) {
+            throw new RegisterException(EXCEPTION, e);
         }
     }
 
@@ -356,7 +357,7 @@ public class Register implements UserRegister, ProviderRegister {
             try (SQLiteHelperPool.SQLiteDatabaseWrapper sqLiteDatabaseWrapper =
                          androidDataSource.getSQLiteDatabaseWrapper()) {
                 SQLiteDatabase db = sqLiteDatabaseWrapper.getSQLiteDatabase();
-                String query = "select * from " + SQLiteHelper.TABLE_PROVIDER +
+                String query = SELECT_QUERY + SQLiteHelper.TABLE_PROVIDER +
                         " where " + SQLiteHelper.PROVIDER_CLM_USER_ADDRESS + " = ?";
                 try(Cursor cursor = db.rawQuery(query,
                         new String[]{userAddress})) {
@@ -367,8 +368,8 @@ public class Register implements UserRegister, ProviderRegister {
                     }
                 }
             }
-        } catch (Throwable t) {
-            throw new RegisterException("Exception", t);
+        } catch (Exception e) {
+            throw new RegisterException(EXCEPTION, e);
         }
     }
 
@@ -388,7 +389,7 @@ public class Register implements UserRegister, ProviderRegister {
             try (SQLiteHelperPool.SQLiteDatabaseWrapper sqLiteDatabaseWrapper =
                          androidDataSource.getSQLiteDatabaseWrapper()) {
                 SQLiteDatabase db = sqLiteDatabaseWrapper.getSQLiteDatabase();
-                String query = "select * from " + SQLiteHelper.TABLE_PROVIDER +
+                String query = SELECT_QUERY + SQLiteHelper.TABLE_PROVIDER +
                         " where " + SQLiteHelper.PROVIDER_CLM_REVOKE_ADDRESS + " = ?";
 
                 try(Cursor cursor = db.rawQuery(query,
@@ -400,8 +401,8 @@ public class Register implements UserRegister, ProviderRegister {
                     }
                 }
             }
-        } catch (Throwable t) {
-            throw new RegisterException("Exception", t);
+        } catch (Exception e) {
+            throw new RegisterException(EXCEPTION, e);
         }
     }
 
@@ -422,7 +423,7 @@ public class Register implements UserRegister, ProviderRegister {
                          androidDataSource.getSQLiteDatabaseWrapper()) {
 
                 SQLiteDatabase db = sqLiteDatabaseWrapper.getSQLiteDatabase();
-                String query = "select * from " + SQLiteHelper.TABLE_PROVIDER +
+                String query = SELECT_QUERY + SQLiteHelper.TABLE_PROVIDER +
                         " where " + SQLiteHelper.PROVIDER_CLM_REVOKE_TX_ID + " = ?";
                 try (Cursor cursor = db.rawQuery(query,
                         new String[]{revokeTxId})){
@@ -433,8 +434,8 @@ public class Register implements UserRegister, ProviderRegister {
                     }
                 }
             }
-        } catch (Throwable t) {
-            throw new RegisterException("Exception", t);
+        } catch (Exception e) {
+            throw new RegisterException(EXCEPTION, e);
         }
     }
 
@@ -461,13 +462,13 @@ public class Register implements UserRegister, ProviderRegister {
                 values.put(SQLiteHelper.PROVIDER_CLM_REVOKE_ADDRESS, providerChannel.getRevokeAddress());
                 values.put(SQLiteHelper.PROVIDER_CLM_REVOKE_TX_ID, providerChannel.getRevokeTxId());
                 values.put(SQLiteHelper.PROVIDER_CLM_CREATION_TIME, providerChannel.getCreationTime());
-                long db_index = db.insert(SQLiteHelper.TABLE_PROVIDER, null, values);
-                if (db_index < 0)
+                long dbIndex = db.insert(SQLiteHelper.TABLE_PROVIDER, null, values);
+                if (dbIndex < 0)
                     throw new RegisterException("Exception while insertChannel()");
             }
-        } catch (Throwable t) {
+        } catch (Exception e) {
 
-            throw new RegisterException("Exception while insertChannel()", t);
+            throw new RegisterException("Exception while insertChannel()", e);
 
         }
     }
@@ -492,8 +493,8 @@ public class Register implements UserRegister, ProviderRegister {
                         SQLiteHelper.PROVIDER_CLM_PROVIDER_ADDRESS + " = ?",
                         new String[]{providerChannel.getProviderAddress()});
             }
-        } catch (Throwable t) {
-            throw new RegisterException("Exception", t);
+        } catch (Exception e) {
+            throw new RegisterException(EXCEPTION, e);
         }
     }
 
