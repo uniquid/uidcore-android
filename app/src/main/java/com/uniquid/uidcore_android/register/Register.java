@@ -532,8 +532,8 @@ public class Register implements UserRegister, ProviderRegister {
         providerChannel.setRevokeAddress(cursor.getString(cursor.getColumnIndex(PROVIDER_CLM_REVOKE_ADDRESS)));
         providerChannel.setRevokeTxId(cursor.getString(cursor.getColumnIndex(PROVIDER_CLM_REVOKE_TX_ID)));
         providerChannel.setCreationTime(cursor.getInt(cursor.getColumnIndex(PROVIDER_CLM_CREATION_TIME)));
-        providerChannel.setSince(cursor.getInt(cursor.getColumnIndex(PROVIDER_CLM_SINCE)));
-        providerChannel.setUntil(cursor.getInt(cursor.getColumnIndex(PROVIDER_CLM_UNTIL)));
+        providerChannel.setSince(cursor.getLong(cursor.getColumnIndex(PROVIDER_CLM_SINCE)));
+        providerChannel.setUntil(cursor.getLong(cursor.getColumnIndex(PROVIDER_CLM_UNTIL)));
         providerChannel.setPath(cursor.getString(cursor.getColumnIndex(PROVIDER_CLM_PATH)));
         return providerChannel;
     }
