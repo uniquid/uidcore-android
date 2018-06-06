@@ -22,6 +22,8 @@ public class SQLiteHelper extends SQLiteOpenHelper {
     static final String USER_CLM_BITMASK = "bitmask";
     static final String USER_CLM_REVOKE_ADDRESS = "revoke_address";
     static final String USER_CLM_REVOKE_TX_ID = "revoke_tx_id";
+    static final String USER_CLM_SINCE = "since";
+    static final String USER_CLM_UNTIL = "until";
     static final String USER_CLM_PATH = "path";
     private static final String USER_CREATE = "create table " + TABLE_USER + "(" +
             USER_CLM_PROVIDER_NAME + " text not null, " +
@@ -30,6 +32,8 @@ public class SQLiteHelper extends SQLiteOpenHelper {
             USER_CLM_BITMASK + " text not null, " +
             USER_CLM_REVOKE_ADDRESS + " text not null, " +
             USER_CLM_REVOKE_TX_ID + " text not null, " +
+            USER_CLM_SINCE + " integer, " +
+            USER_CLM_UNTIL + " integer, " +
 			USER_CLM_PATH + " text not null, primary key (" +
             USER_CLM_PROVIDER_NAME + ", " +
             USER_CLM_PROVIDER_ADDRESS + ", " +

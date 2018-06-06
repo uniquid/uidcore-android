@@ -103,7 +103,10 @@ public class Register implements UserRegister, ProviderRegister {
                 Cursor cursor = db.rawQuery("select * from " + TABLE_USER, null);
                 if (cursor.moveToFirst()) {
                     do {
-                        channels.add(createUserChannelFromCursor(cursor));
+                        UserChannel userChannel = createUserChannelFromCursor(cursor);
+                        if(userChannel.isValid()){
+                            channels.add(userChannel);
+						}
                     } while (cursor.moveToNext());
                 }
                 cursor.close();
@@ -274,6 +277,8 @@ public class Register implements UserRegister, ProviderRegister {
                 values.put(SQLiteHelper.USER_CLM_BITMASK, userChannel.getBitmask());
                 values.put(SQLiteHelper.USER_CLM_REVOKE_ADDRESS, userChannel.getRevokeAddress());
                 values.put(SQLiteHelper.USER_CLM_REVOKE_TX_ID, userChannel.getRevokeTxId());
+                values.put(SQLiteHelper.USER_CLM_SINCE, userChannel.getSince());
+                values.put(SQLiteHelper.USER_CLM_UNTIL, userChannel.getUntil());
                 values.put(SQLiteHelper.USER_CLM_PATH, userChannel.getPath());
                 long db_index = db.insert(TABLE_USER, null, values);
                 if (db_index < 0)
@@ -520,6 +525,8 @@ public class Register implements UserRegister, ProviderRegister {
         userChannel.setBitmask(cursor.getString(cursor.getColumnIndex(SQLiteHelper.USER_CLM_BITMASK)));
         userChannel.setRevokeAddress(cursor.getString(cursor.getColumnIndex(SQLiteHelper.USER_CLM_REVOKE_ADDRESS)));
         userChannel.setRevokeTxId(cursor.getString(cursor.getColumnIndex(SQLiteHelper.USER_CLM_REVOKE_TX_ID)));
+        userChannel.setSince(cursor.getLong(cursor.getColumnIndex(SQLiteHelper.USER_CLM_SINCE)));
+        userChannel.setUntil(cursor.getLong(cursor.getColumnIndex(SQLiteHelper.USER_CLM_UNTIL)));
         userChannel.setPath(cursor.getString(cursor.getColumnIndex(SQLiteHelper.USER_CLM_PATH)));
         return userChannel;
     }
