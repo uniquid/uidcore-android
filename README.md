@@ -8,10 +8,17 @@ The HEAD of the `master` branch contains the latest development code and various
 are provided on feature branches.
 This library depends on the [uidcore-java project](https://github.com/uniquid/uidcore-java.git). If you need 
 to work on both project, you have to clone that linked repository.
+In your Android application you have to add this line to gradle app:
+
+`implementation 'org.fusesource.mqtt-client:mqtt-client:1.12'`
 
 ### Usage example
 ```java
 public class MainActivity extends Activity implements UniquidNodeEventListener {
+	
+	private static final NetworkParameters UNIQNET = UniquidRegTest.get();
+	
+	private String registryUrl = "http://appliance4.uniquid.co:8080";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,13 +37,13 @@ public class MainActivity extends Activity implements UniquidNodeEventListener {
         
         DefaultUserClientFactory defaultUserClientFactory = new DefaultUserClientFactory(PreferencesUtils.getBroker(MainActivity.this), 20);
         
-        uBuilder.setNetworkParameters(Config.getNetworkParameter()).
+        uBuilder.setNetworkParameters(UNIQNET).
             setProviderFile(providerWalletFile).
             setUserFile(userWalletFile).
             setProviderChainFile(chainFile).
             setUserChainFile(userChainFile).
             setRegisterFactory(registerFactory).
-            setRegistryUrl(PreferencesUtils.getRegistryURL(MainActivity.this)).
+            setRegistryUrl(registryUrl).
             setUserClientFactory(defaultUserClientFactory).
             setNodeName(machineName);
             
