@@ -37,14 +37,11 @@ public class UserRegisterTest extends com.uniquid.register.user.UserRegisterTest
         assertNotNull(register);
     }
 
-    @After
     @Test
     public void testClean() throws RegisterException {
-        Context context = InstrumentationRegistry.getContext();
-
-        RegisterFactoryImpl factory = new RegisterFactoryImpl(context, 5);
 
         UserRegister userRegister = factory.getUserRegister();
+
         UserChannel userChannel = new UserChannel();
         userChannel.setProviderName("providerName");
         userChannel.setProviderAddress("providerAddress");
@@ -59,6 +56,27 @@ public class UserRegisterTest extends com.uniquid.register.user.UserRegisterTest
         userRegister.insertChannel(userChannel);
 
         assertTrue(userRegister.getAllUserChannels().size() > 0);
+
+        UserChannel userChannel1 = new UserChannel();
+        userChannel1.setProviderName("providerName1");
+        userChannel1.setProviderAddress("providerAddress1");
+        userChannel1.setUserAddress("userAddress1");
+        userChannel1.setBitmask("11111");
+        userChannel1.setRevokeAddress("revokeAddress");
+        userChannel1.setRevokeTxId("revokeTxId");
+        userChannel1.setSince(1528200741000L);		// 06/05/2018 @ 12:12pm (UTC)
+        userChannel1.setUntil(1528200741000L);		// 06/05/2018 @ 12:12pm (UTC)
+        userChannel1.setPath("path");
+
+        userRegister.insertChannel(userChannel1);
+
+        assertTrue(userRegister.getAllUserChannels().size() > 0);
+
+        int size = userRegister.getAllUserChannels().size();
+
+        factory.deleteExpired();
+
+        assertEquals(size, userRegister.getAllUserChannels().size());
 
         factory.cleanTables();
 

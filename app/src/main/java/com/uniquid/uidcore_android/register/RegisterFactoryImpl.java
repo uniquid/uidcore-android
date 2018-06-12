@@ -6,7 +6,10 @@ import com.uniquid.register.RegisterFactory;
 import com.uniquid.register.exception.RegisterException;
 import com.uniquid.register.provider.ProviderRegister;
 import com.uniquid.register.transaction.TransactionManager;
+import com.uniquid.register.user.UserChannel;
 import com.uniquid.register.user.UserRegister;
+
+import java.util.List;
 
 /**
  * Concrete class implementation of {@code RegisterFactory} that uses SQLite as data store.
@@ -49,6 +52,16 @@ public class RegisterFactoryImpl implements RegisterFactory {
         Register register = new Register(androidDataSource);
         register.cleanUserTable();
         register.cleanProviderTable();
+    }
+
+    public void deleteExpired() throws RegisterException {
+        Register register = new Register(androidDataSource);
+		List<UserChannel> channels = register.getExpiredUserChannel();
+		if(channels.isEmpty()) return;
+
+		for(UserChannel userChannel : channels) {
+			register.deleteChannel(userChannel);
+		}
     }
 
     /**

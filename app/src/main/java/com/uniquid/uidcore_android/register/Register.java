@@ -84,6 +84,32 @@ public class Register implements UserRegister, ProviderRegister {
         }
     }
 
+    public List<UserChannel> getExpiredUserChannel() throws RegisterException {
+        try {
+
+            try (SQLiteHelperPool.SQLiteDatabaseWrapper sqLiteDatabaseWrapper =
+                         androidDataSource.getSQLiteDatabaseWrapper()) {
+
+                SQLiteDatabase db = sqLiteDatabaseWrapper.getSQLiteDatabase();
+
+                List<UserChannel> channels = new ArrayList<>();
+                Cursor cursor = db.rawQuery("select * from " + TABLE_USER, null);
+                if (cursor.moveToFirst()) {
+                    do {
+                        UserChannel userChannel = createUserChannelFromCursor(cursor);
+                        if(!userChannel.isValid()){
+                            channels.add(userChannel);
+                        }
+                    } while (cursor.moveToNext());
+                }
+                cursor.close();
+                return channels;
+            }
+        } catch (Throwable t) {
+            throw new RegisterException("Exception", t);
+        }
+    }
+
     /**
      * Return a List containing all the {@code UserChannel} present in the data store.
      * In case no {@code UserChannel} is present an empty list is returned.
