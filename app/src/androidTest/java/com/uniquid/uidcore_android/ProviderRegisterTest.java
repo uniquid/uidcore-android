@@ -53,6 +53,9 @@ public class ProviderRegisterTest extends com.uniquid.register.provider.Provider
         providerChannel.setBitmask("11111");
         providerChannel.setRevokeAddress("revokeAddress");
         providerChannel.setRevokeTxId("revokeTxId");
+        providerChannel.setSince(0L);
+        providerChannel.setUntil(600000L);
+        providerChannel.setPath("path");
 
         providerRegister.insertChannel(providerChannel);
 

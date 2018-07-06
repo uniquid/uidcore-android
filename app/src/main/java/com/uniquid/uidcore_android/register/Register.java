@@ -16,6 +16,14 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.uniquid.uidcore_android.register.SQLiteHelper.PROVIDER_CLM_BITMASK;
+import static com.uniquid.uidcore_android.register.SQLiteHelper.PROVIDER_CLM_CREATION_TIME;
+import static com.uniquid.uidcore_android.register.SQLiteHelper.PROVIDER_CLM_PATH;
+import static com.uniquid.uidcore_android.register.SQLiteHelper.PROVIDER_CLM_REVOKE_ADDRESS;
+import static com.uniquid.uidcore_android.register.SQLiteHelper.PROVIDER_CLM_REVOKE_TX_ID;
+import static com.uniquid.uidcore_android.register.SQLiteHelper.PROVIDER_CLM_SINCE;
+import static com.uniquid.uidcore_android.register.SQLiteHelper.PROVIDER_CLM_UNTIL;
+import static com.uniquid.uidcore_android.register.SQLiteHelper.PROVIDER_CLM_USER_ADDRESS;
 import static com.uniquid.uidcore_android.register.SQLiteHelper.TABLE_PROVIDER;
 import static com.uniquid.uidcore_android.register.SQLiteHelper.TABLE_USER;
 
@@ -76,6 +84,32 @@ public class Register implements UserRegister, ProviderRegister {
         }
     }
 
+    public List<UserChannel> getExpiredUserChannel() throws RegisterException {
+        try {
+
+            try (SQLiteHelperPool.SQLiteDatabaseWrapper sqLiteDatabaseWrapper =
+                         androidDataSource.getSQLiteDatabaseWrapper()) {
+
+                SQLiteDatabase db = sqLiteDatabaseWrapper.getSQLiteDatabase();
+
+                List<UserChannel> channels = new ArrayList<>();
+                Cursor cursor = db.rawQuery("select * from " + TABLE_USER, null);
+                if (cursor.moveToFirst()) {
+                    do {
+                        UserChannel userChannel = createUserChannelFromCursor(cursor);
+                        if(!userChannel.isValid()){
+                            channels.add(userChannel);
+                        }
+                    } while (cursor.moveToNext());
+                }
+                cursor.close();
+                return channels;
+            }
+        } catch (Throwable t) {
+            throw new RegisterException("Exception", t);
+        }
+    }
+
     /**
      * Return a List containing all the {@code UserChannel} present in the data store.
      * In case no {@code UserChannel} is present an empty list is returned.
@@ -95,7 +129,10 @@ public class Register implements UserRegister, ProviderRegister {
                 Cursor cursor = db.rawQuery("select * from " + TABLE_USER, null);
                 if (cursor.moveToFirst()) {
                     do {
-                        channels.add(createUserChannelFromCursor(cursor));
+                        UserChannel userChannel = createUserChannelFromCursor(cursor);
+                        if(userChannel.isValid()){
+                            channels.add(userChannel);
+						}
                     } while (cursor.moveToNext());
                 }
                 cursor.close();
@@ -266,6 +303,9 @@ public class Register implements UserRegister, ProviderRegister {
                 values.put(SQLiteHelper.USER_CLM_BITMASK, userChannel.getBitmask());
                 values.put(SQLiteHelper.USER_CLM_REVOKE_ADDRESS, userChannel.getRevokeAddress());
                 values.put(SQLiteHelper.USER_CLM_REVOKE_TX_ID, userChannel.getRevokeTxId());
+                values.put(SQLiteHelper.USER_CLM_SINCE, userChannel.getSince());
+                values.put(SQLiteHelper.USER_CLM_UNTIL, userChannel.getUntil());
+                values.put(SQLiteHelper.USER_CLM_PATH, userChannel.getPath());
                 long db_index = db.insert(TABLE_USER, null, values);
                 if (db_index < 0)
                     throw new RegisterException("Error inserting new channel");
@@ -326,7 +366,9 @@ public class Register implements UserRegister, ProviderRegister {
                 SQLiteDatabase db = sqLiteDatabaseWrapper.getSQLiteDatabase();
                 List<ProviderChannel> channels = new ArrayList<>();
 
-                try(Cursor cursor = db.rawQuery("select * from " + SQLiteHelper.TABLE_PROVIDER, null)) {
+                String query = "select * from " + SQLiteHelper.TABLE_PROVIDER + " order by " + SQLiteHelper.PROVIDER_CLM_CREATION_TIME + " desc";
+                try(Cursor cursor = db.rawQuery(query,
+						null)) {
                     if (cursor.moveToFirst()) {
                         do {
                             channels.add(createProviderChannelFromCursor(cursor));
@@ -461,6 +503,10 @@ public class Register implements UserRegister, ProviderRegister {
                 values.put(SQLiteHelper.PROVIDER_CLM_REVOKE_ADDRESS, providerChannel.getRevokeAddress());
                 values.put(SQLiteHelper.PROVIDER_CLM_REVOKE_TX_ID, providerChannel.getRevokeTxId());
                 values.put(SQLiteHelper.PROVIDER_CLM_CREATION_TIME, providerChannel.getCreationTime());
+                values.put(SQLiteHelper.PROVIDER_CLM_SINCE, providerChannel.getSince());
+                values.put(SQLiteHelper.PROVIDER_CLM_UNTIL, providerChannel.getUntil());
+                values.put(SQLiteHelper.PROVIDER_CLM_PATH, providerChannel.getPath());
+
                 long db_index = db.insert(SQLiteHelper.TABLE_PROVIDER, null, values);
                 if (db_index < 0)
                     throw new RegisterException("Exception while insertChannel()");
@@ -505,17 +551,23 @@ public class Register implements UserRegister, ProviderRegister {
         userChannel.setBitmask(cursor.getString(cursor.getColumnIndex(SQLiteHelper.USER_CLM_BITMASK)));
         userChannel.setRevokeAddress(cursor.getString(cursor.getColumnIndex(SQLiteHelper.USER_CLM_REVOKE_ADDRESS)));
         userChannel.setRevokeTxId(cursor.getString(cursor.getColumnIndex(SQLiteHelper.USER_CLM_REVOKE_TX_ID)));
+        userChannel.setSince(cursor.getLong(cursor.getColumnIndex(SQLiteHelper.USER_CLM_SINCE)));
+        userChannel.setUntil(cursor.getLong(cursor.getColumnIndex(SQLiteHelper.USER_CLM_UNTIL)));
+        userChannel.setPath(cursor.getString(cursor.getColumnIndex(SQLiteHelper.USER_CLM_PATH)));
         return userChannel;
     }
 
     private ProviderChannel createProviderChannelFromCursor(Cursor cursor) {
         ProviderChannel providerChannel = new ProviderChannel();
-        providerChannel.setProviderAddress(cursor.getString(0));
-        providerChannel.setUserAddress(cursor.getString(1));
-        providerChannel.setBitmask(cursor.getString(2));
-        providerChannel.setRevokeAddress(cursor.getString(3));
-        providerChannel.setRevokeTxId(cursor.getString(4));
-        providerChannel.setCreationTime(cursor.getInt(5));
+        providerChannel.setProviderAddress(cursor.getString(cursor.getColumnIndex(SQLiteHelper.PROVIDER_CLM_PROVIDER_ADDRESS)));
+        providerChannel.setUserAddress(cursor.getString(cursor.getColumnIndex(PROVIDER_CLM_USER_ADDRESS)));
+        providerChannel.setBitmask(cursor.getString(cursor.getColumnIndex(PROVIDER_CLM_BITMASK)));
+        providerChannel.setRevokeAddress(cursor.getString(cursor.getColumnIndex(PROVIDER_CLM_REVOKE_ADDRESS)));
+        providerChannel.setRevokeTxId(cursor.getString(cursor.getColumnIndex(PROVIDER_CLM_REVOKE_TX_ID)));
+        providerChannel.setCreationTime(cursor.getInt(cursor.getColumnIndex(PROVIDER_CLM_CREATION_TIME)));
+        providerChannel.setSince(cursor.getLong(cursor.getColumnIndex(PROVIDER_CLM_SINCE)));
+        providerChannel.setUntil(cursor.getLong(cursor.getColumnIndex(PROVIDER_CLM_UNTIL)));
+        providerChannel.setPath(cursor.getString(cursor.getColumnIndex(PROVIDER_CLM_PATH)));
         return providerChannel;
     }
 }

@@ -1,7 +1,6 @@
 package com.uniquid.uidcore_android;
 
 import android.support.test.InstrumentationRegistry;
-import android.support.test.filters.LargeTest;
 
 import com.uniquid.register.exception.RegisterException;
 import com.uniquid.register.provider.ProviderChannel;
@@ -47,7 +46,7 @@ public class ProviderRegisterNameTest {
         assertNotNull(registerName);
     }
 
-    @LargeTest
+    @Test
     public void testInsert() throws RegisterException {
         ProviderRegister register = factory.getProviderRegister();
 
@@ -62,6 +61,9 @@ public class ProviderRegisterNameTest {
         providerChannel.setRevokeAddress("mjgWHUCV86eLp7B8mhHUuBAyCS136hz7SH");
         providerChannel.setRevokeTxId("97ab3c1a7bbca566712ab843a65d2e1bf94594b26b2ffe9d3348e4403065c1db");
         providerChannel.setBitmask("00000");
+        providerChannel.setSince(0);
+        providerChannel.setUntil(600000);
+        providerChannel.setPath("path");
 
         try {
             register.insertChannel(null);
@@ -97,7 +99,11 @@ public class ProviderRegisterNameTest {
         providerChannelName.setUserAddress("userAddress");
         providerChannelName.setRevokeAddress("revokerAddress");
         providerChannelName.setRevokeTxId("revokeTxid");
-        providerChannelName.setBitmask("11111");
+		providerChannelName.setCreationTime(123456789L);
+		providerChannelName.setBitmask("11111");
+		providerChannelName.setSince(0L);
+		providerChannelName.setUntil(600000L);
+		providerChannelName.setPath("path");
 
         try {
             registerName.insertChannel(null);
